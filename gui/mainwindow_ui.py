@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -94,6 +95,17 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        MainWindow.setTabOrder(self.tabWidget, self.Address)
+        MainWindow.setTabOrder(self.Address, self.StartDate)
+        MainWindow.setTabOrder(self.StartDate, self.EndDate)
+        MainWindow.setTabOrder(self.EndDate, self.CreateCSV)
+        MainWindow.setTabOrder(self.CreateCSV, self.GetBalance)
+        MainWindow.setTabOrder(self.GetBalance, self.output)
+        MainWindow.setTabOrder(self.output, self.Source)
+        MainWindow.setTabOrder(self.Source, self.Memo)
+        MainWindow.setTabOrder(self.Memo, self.MinThresh)
+        MainWindow.setTabOrder(self.MinThresh, self.MaxThresh)
+        MainWindow.setTabOrder(self.MaxThresh, self.SaveSettings)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate

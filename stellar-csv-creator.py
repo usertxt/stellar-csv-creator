@@ -66,8 +66,7 @@ class CSVCreator:
                 end_date = datetime.strptime(self.ui.EndDate.text(), "%Y-%m-%d")
                 end_date_console = datetime.strftime(end_date, "%Y-%m-%d")
 
-            logging.info(f"Creating CSV with transactions from {start_date_console} to {end_date_console}")
-            self.console(f"Creating CSV with transactions from {start_date_console} to {end_date_console}")
+            self.console(f"Creating CSV with transactions from {start_date_console} to {end_date_console}", log=True)
             logging.info(top_row)
             self.ui.output.append(str(top_row))
             for tx in main_response:
@@ -100,7 +99,7 @@ class CSVCreator:
             e = str(e)
             if e == "'amount'":
                 e = e.replace("'amount'", "==End of transactions from selected date range==")
-                self.console(e)
+                self.console(e, log=True)
             else:
                 self.console(e, error=True)
 
@@ -136,21 +135,18 @@ class CSVCreator:
             self.console(e, error=True)
 
     def console(self, info, error=False, log=False):
-        if error:
-            self.ui.output.append(f"<html><font color=red><b>{info}</b></font></html>")
+        console_append = f"<html><b>{info}</b></html>"
         if log:
             logging.info(info)
-        if not error and not log:
-            self.ui.output.append(f"<html><b>{info}</b></html>")
+        if error:
+            console_append = f"<html><font color=red><b>{info}</b></font></html>"
+
+        self.ui.output.append(console_append)
 
     def exit_app(self):
         sys.exit()
 
     def error_handler(self, exc_type, exc_value, exc_traceback):
-        if issubclass(exc_type, KeyboardInterrupt):
-            sys.__excepthook__(exc_type, exc_value, exc_traceback)
-            return
-
         logging.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
         self.console("CRITICAL ERROR: Check log file for full details", error=True)
 
