@@ -23,9 +23,11 @@ class Ui_MainWindow(object):
         self.EndDate.setGeometry(QtCore.QRect(480, 20, 75, 20))
         self.EndDate.setObjectName("EndDate")
         self.CreateCSV = QtWidgets.QPushButton(self.tab)
+        self.CreateCSV.setEnabled(False)
         self.CreateCSV.setGeometry(QtCore.QRect(480, 60, 75, 23))
         self.CreateCSV.setObjectName("CreateCSV")
         self.GetBalance = QtWidgets.QPushButton(self.tab)
+        self.GetBalance.setEnabled(False)
         self.GetBalance.setGeometry(QtCore.QRect(480, 90, 75, 23))
         self.GetBalance.setObjectName("GetBalance")
         self.StartDate = QtWidgets.QLineEdit(self.tab)
@@ -122,10 +124,8 @@ class Ui_MainWindow(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Welcome!</p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">==CSV Instructions==</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Start by putting your Stellar address into the address field, then input the date of the oldest transation you would like to add to the CSV file into the <span style=\" font-weight:600;\">Start Date</span> field. The <span style=\" font-weight:600;\">Start Date</span> field is required!</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; font-weight:600;\">Instructions</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Start by putting your Stellar address into the <span style=\" font-weight:600;\">Address</span> field, then input the date of the oldest transation you would like to add to the CSV file into the <span style=\" font-weight:600;\">Start Date</span> field. The <span style=\" font-weight:600;\">Start Date</span> field is required.</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.labelAddress.setText(_translate("MainWindow", "Stellar Address"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Main"))

@@ -23,7 +23,7 @@ class CSVCreator:
         MainWindow = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(MainWindow)
-        self.link_buttons()
+        self.make_links()
         self.get_config()
 
         MainWindow.show()
@@ -35,11 +35,19 @@ class CSVCreator:
         self.ui.MinThresh.setText(self._translate("MainWindow", self.csv_config["MIN_THRESH"]))
         self.ui.MaxThresh.setText(self._translate("MainWindow", self.csv_config["MAX_THRESH"]))
 
-    def link_buttons(self):
+    def make_links(self):
         self.ui.CreateCSV.clicked.connect(self.create_csv)
         self.ui.GetBalance.clicked.connect(self.get_balance)
         self.ui.SaveSettings.clicked.connect(self.save_settings)
         self.ui.actionExit.triggered.connect(self.exit_app)
+        self.ui.Address.textChanged.connect(self.enable_buttons)
+        self.ui.StartDate.textChanged.connect(self.enable_buttons)
+
+    def enable_buttons(self):
+        if self.ui.Address.text():
+            self.ui.GetBalance.setEnabled(True)
+        if self.ui.Address.text() and self.ui.StartDate.text():
+            self.ui.CreateCSV.setEnabled(True)
 
     def create_csv(self):
         if not self.ui.Address.text() or not self.ui.StartDate.text():
@@ -101,7 +109,7 @@ class CSVCreator:
                 e = e.replace("'amount'", "==End of transactions from selected date range==")
                 self.console(e, log=True)
             else:
-                self.console(e, error=True)
+                self.console(e, error=True, log=True)
 
     def get_balance(self):
         try:
@@ -117,7 +125,7 @@ class CSVCreator:
         except Exception as e:
             e = getattr(e, "message", repr(e))
             self.console("Unable to retrieve balance. Check the accuracy of your address.", error=True, log=True)
-            self.console(e, log=True)
+            self.console(e, error=True, log=True)
 
     def save_settings(self):
         try:
@@ -132,7 +140,7 @@ class CSVCreator:
         except Exception as e:
             e = getattr(e, "message", repr(e))
             self.ui.statusbar.showMessage("Unable to save settings")
-            self.console(e, error=True)
+            self.console(e, error=True, log=True)
 
     def console(self, info, error=False, log=False):
         console_append = f"<html><b>{info}</b></html>"
@@ -141,7 +149,7 @@ class CSVCreator:
         if error:
             console_append = f"<html><font color=red><b>{info}</b></font></html>"
 
-        self.ui.output.append(console_append)
+        return self.ui.output.append(console_append)
 
     def exit_app(self):
         sys.exit()
