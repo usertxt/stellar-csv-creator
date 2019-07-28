@@ -1,5 +1,6 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
 from gui.mainwindow_ui import Ui_MainWindow
+from gui.about import Ui_Dialog
 from datetime import datetime
 import logging
 import csv
@@ -40,6 +41,7 @@ class CSVCreator:
         self.ui.GetBalance.clicked.connect(self.get_balance)
         self.ui.SaveSettings.clicked.connect(self.save_settings)
         self.ui.actionExit.triggered.connect(self.exit_app)
+        self.ui.actionAbout.triggered.connect(self.about_dialog)
         self.ui.Address.textChanged.connect(self.enable_buttons)
         self.ui.StartDate.textChanged.connect(self.enable_buttons)
 
@@ -48,6 +50,14 @@ class CSVCreator:
             self.ui.GetBalance.setEnabled(True)
         if self.ui.Address.text() and self.ui.StartDate.text():
             self.ui.CreateCSV.setEnabled(True)
+
+    def about_dialog(self):
+        Dialog = QtWidgets.QDialog(None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
+                                   QtCore.Qt.WindowCloseButtonHint)
+        about = Ui_Dialog()
+        about.setupUi(Dialog)
+        Dialog.show()
+        Dialog.exec_()
 
     def create_csv(self):
         if not self.ui.Address.text() or not self.ui.StartDate.text():
