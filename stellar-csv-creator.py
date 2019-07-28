@@ -8,6 +8,8 @@ import json
 import requests
 import sys
 
+VERSION = "0.1.0"
+
 logging.basicConfig(filename="stellar-csv-creator.log", format=f"%(asctime)s:%(levelname)s:%(message)s",
                     datefmt="%Y-%m-%dT%H:%M:%SZ", level=logging.INFO)
 
@@ -24,7 +26,7 @@ class CSVCreator:
         MainWindow = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(MainWindow)
-        MainWindow.setWindowTitle(self._translate("MainWindow", "Stellar CSV Creator"))
+        MainWindow.setWindowTitle(self._translate("MainWindow", f"Stellar CSV Creator v{VERSION}"))
         self.make_links()
         self.get_config()
 
@@ -57,6 +59,8 @@ class CSVCreator:
                                    QtCore.Qt.WindowCloseButtonHint)
         about = Ui_Dialog()
         about.setupUi(Dialog)
+        about.labelVersion.setText(self._translate("Dialog",
+                                                   f"<html><head/><body><p>Version {VERSION}</p></body></html>"))
         Dialog.show()
         Dialog.exec_()
 
