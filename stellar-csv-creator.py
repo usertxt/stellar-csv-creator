@@ -1,5 +1,5 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
-from gui.mainwindow_ui import Ui_MainWindow
+from gui.main_window import Ui_MainWindow
 from gui.about import Ui_Dialog
 from datetime import datetime
 import logging
@@ -24,6 +24,7 @@ class CSVCreator:
         MainWindow = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(MainWindow)
+        MainWindow.setWindowTitle(self._translate("MainWindow", "Stellar CSV Creator"))
         self.make_links()
         self.get_config()
 

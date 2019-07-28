@@ -5,6 +5,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(600, 260)
+        MainWindow.setWindowTitle("")
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         MainWindow.setWindowIcon(icon)
@@ -117,7 +118,6 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Stellar Transactions"))
         self.labelEndDate.setText(_translate("MainWindow", "End Date"))
         self.EndDate.setPlaceholderText(_translate("MainWindow", "YYYY-MM-DD"))
         self.CreateCSV.setStatusTip(_translate("MainWindow", "Create CSV"))
