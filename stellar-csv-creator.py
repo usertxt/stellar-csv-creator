@@ -20,24 +20,57 @@ class CSVCreator:
         self.config_path = "config.json"
         self.config = json.load(open(self.config_path))
         self.csv_config = self.config["CSV"]
+        self.app_config = self.config["APP"]
+        self.theme = self.app_config["THEME"]
 
         self._translate = QtCore.QCoreApplication.translate
-        app = QtWidgets.QApplication(sys.argv)
+        self.app = QtWidgets.QApplication(sys.argv)
         MainWindow = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(MainWindow)
         MainWindow.setWindowTitle(self._translate("MainWindow", f"Stellar CSV Creator v{VERSION}"))
+        self.app.setStyle('Fusion')
         self.make_links()
         self.get_config()
+        if self.theme == "dark":
+            self.dark_theme()
 
         MainWindow.show()
-        sys.exit(app.exec_())
+        sys.exit(self.app.exec_())
+
+    def dark_theme(self):
+        palette = QtGui.QPalette()
+        palette.setColor(QtGui.QPalette.Window, QtGui.QColor(90, 90, 90))
+        palette.setColor(QtGui.QPalette.Base, QtGui.QColor(90, 90, 90))
+        palette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(90, 90, 90))
+        palette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.blue)
+        palette.setColor(QtGui.QPalette.Text, QtCore.Qt.white)
+        palette.setColor(QtGui.QPalette.Button, QtGui.QColor(90, 90, 90))
+        palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
+        palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.white)
+        palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(17, 31, 54).lighter())
+        palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.white)
+        palette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
+        palette.setColor(QtGui.QPalette.Link, QtCore.Qt.yellow)
+        palette.setColor(QtGui.QPalette.LinkVisited, QtCore.Qt.yellow)
+
+        self.app.setPalette(palette)
+        self.ui.CreateCSV.setStyleSheet(".QPushButton:disabled {color: gray}")
+        self.ui.GetBalance.setStyleSheet(".QPushButton:disabled {color: gray}")
+        self.ui.radioButtonDarkMode.setStyleSheet(".QRadioButton:disabled {color: gray}")
+        self.ui.radioButtonLightMode.setStyleSheet(".QRadioButton:disabled {color: gray}")
 
     def get_config(self):
         self.ui.Source.setText(self._translate("MainWindow", self.csv_config["SOURCE"]))
         self.ui.Memo.setText(self._translate("MainWindow", self.csv_config["MEMO"]))
         self.ui.MinThresh.setText(self._translate("MainWindow", self.csv_config["MIN_THRESH"]))
         self.ui.MaxThresh.setText(self._translate("MainWindow", self.csv_config["MAX_THRESH"]))
+        if self.theme == "default":
+            self.ui.radioButtonLightMode.click()
+            self.ui.radioButtonLightMode.setDisabled(True)
+        else:
+            self.ui.radioButtonDarkMode.click()
+            self.ui.radioButtonDarkMode.setDisabled(True)
 
     def make_links(self):
         self.ui.CreateCSV.clicked.connect(self.create_csv)
@@ -116,7 +149,7 @@ class CSVCreator:
                         with open(f"{self.ui.Address.text()}.csv", "a", newline="") as file:
                             writer = csv.writer(file)
                             writer.writerow(rows)
-                self.ui.statusbar.showMessage("CSV created")
+                self.ui.statusbar.showMessage("CSV created", msecs=3000)
 
         except Exception as e:
             e = str(e)
@@ -144,10 +177,25 @@ class CSVCreator:
 
     def save_settings(self):
         try:
+            def theme_warning():
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setText('Restart required to change theme')
+                msgBox.addButton(QtWidgets.QPushButton('OK'), QtWidgets.QMessageBox.YesRole)
+                msgBox.exec_()
+
+            if self.ui.radioButtonLightMode.isChecked() and self.theme == "dark":
+                theme_warning()
+            elif self.ui.radioButtonDarkMode.isChecked() and self.theme == "default":
+                theme_warning()
+
             self.csv_config["MIN_THRESH"] = self.ui.MinThresh.text()
             self.csv_config["MAX_THRESH"] = self.ui.MaxThresh.text()
             self.csv_config["SOURCE"] = self.ui.Source.text()
             self.csv_config["MEMO"] = self.ui.Memo.text()
+            if self.ui.radioButtonLightMode.isChecked():
+                self.app_config["THEME"] = "default"
+            else:
+                self.app_config["THEME"] = "dark"
             with open(self.config_path, "w") as updated_config:
                 json.dump(self.config, updated_config, indent=2, sort_keys=False, ensure_ascii=True)
             self.ui.statusbar.showMessage("Settings saved")

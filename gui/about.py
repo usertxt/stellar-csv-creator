@@ -44,5 +44,5 @@ class Ui_Dialog(object):
         Dialog.setWindowTitle(_translate("Dialog", "About"))
         self.labelAbout1.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:8.25pt;\">This program was written with Python and uses Qt for the front-end.</span></p></body></html>"))
         self.labelAbout2.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:8.25pt;\">This program is completely free, open source, and comes with no warranty.</span></p></body></html>"))
-        self.labelSourceCodeLink.setText(_translate("Dialog", "<html><head/><body><p><a href=\"https://github.com/usertxt/stellar-csv-creator\"><span style=\" text-decoration: underline; color:#0000ff;\">Source Code</span></a></p></body></html>"))
-        self.labelLicenseLink.setText(_translate("Dialog", "<html><head/><body><p><a href=\"https://github.com/usertxt/stellar-csv-creator/blob/master/LICENSE\"><span style=\" text-decoration: underline; color:#0000ff;\">The MIT License</span></a></p></body></html>"))
+        self.labelSourceCodeLink.setText(_translate("Dialog", "<a href=\"https://github.com/usertxt/stellar-csv-creator\">Source Code</a>"))
+        self.labelLicenseLink.setText(_translate("Dialog", "<a href=\"https://github.com/usertxt/stellar-csv-creator/blob/master/LICENSE\">The MIT License</a>"))

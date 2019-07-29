@@ -1,4 +1,7 @@
 {
+  "APP": {
+    "THEME": "default"
+  },
   "CSV": {
     "MIN_THRESH": "1",
     "MAX_THRESH": "2",
