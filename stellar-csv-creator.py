@@ -23,12 +23,11 @@ class CSVCreator:
         self.app_config = self.config["APP"]
         self.theme = self.app_config["THEME"]
 
-        self._translate = QtCore.QCoreApplication.translate
         self.app = QtWidgets.QApplication(sys.argv)
         MainWindow = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(MainWindow)
-        MainWindow.setWindowTitle(self._translate("MainWindow", f"Stellar CSV Creator v{VERSION}"))
+        MainWindow.setWindowTitle(f"Stellar CSV Creator v{VERSION}")
         self.app.setStyle('Fusion')
         self.make_links()
         self.get_config()
@@ -61,16 +60,29 @@ class CSVCreator:
         self.ui.radioButtonLightMode.setStyleSheet(".QRadioButton:disabled {color: gray}")
 
     def get_config(self):
-        self.ui.Source.setText(self._translate("MainWindow", self.csv_config["SOURCE"]))
-        self.ui.Memo.setText(self._translate("MainWindow", self.csv_config["MEMO"]))
-        self.ui.MinThresh.setText(self._translate("MainWindow", self.csv_config["MIN_THRESH"]))
-        self.ui.MaxThresh.setText(self._translate("MainWindow", self.csv_config["MAX_THRESH"]))
+        rb_light = self.ui.radioButtonLightMode
+        rb_dark = self.ui.radioButtonDarkMode
+
+        self.ui.Source.setText(self.csv_config["SOURCE"])
+        self.ui.Memo.setText(self.csv_config["MEMO"])
+        self.ui.MinThresh.setText(self.csv_config["MIN_THRESH"])
+        self.ui.MaxThresh.setText(self.csv_config["MAX_THRESH"])
+
         if self.theme == "default":
-            self.ui.radioButtonLightMode.click()
-            self.ui.radioButtonLightMode.setDisabled(True)
-        else:
-            self.ui.radioButtonDarkMode.click()
-            self.ui.radioButtonDarkMode.setDisabled(True)
+            rb_light.click()
+            rb_light.setDisabled(True)
+        if self.theme == "dark":
+            rb_dark.click()
+            rb_dark.setDisabled(True)
+
+        if rb_dark.isChecked() and self.theme == "default":
+            rb_light.setEnabled(True)
+            rb_light.click()
+            rb_light.setDisabled(True)
+        if rb_light.isChecked() and self.theme == "dark":
+            rb_dark.setEnabled(True)
+            rb_dark.click()
+            rb_dark.setDisabled(True)
 
     def make_links(self):
         self.ui.CreateCSV.clicked.connect(self.create_csv)
@@ -80,6 +92,7 @@ class CSVCreator:
         self.ui.actionAbout.triggered.connect(self.about_dialog)
         self.ui.Address.textChanged.connect(self.enable_buttons)
         self.ui.StartDate.textChanged.connect(self.enable_buttons)
+        self.ui.resetButton.clicked.connect(self.get_config)
 
     def enable_buttons(self):
         if self.ui.Address.text():
@@ -92,8 +105,7 @@ class CSVCreator:
                                    QtCore.Qt.WindowCloseButtonHint)
         about = Ui_Dialog()
         about.setupUi(Dialog)
-        about.labelVersion.setText(self._translate("Dialog",
-                                                   f"<html><head/><body><p>Version {VERSION}</p></body></html>"))
+        about.labelVersion.setText(f"<html><head/><body><p>Version {VERSION}</p></body></html>")
         Dialog.show()
         Dialog.exec_()
 
