@@ -118,8 +118,11 @@ class Ui_MainWindow(object):
         self.actionExit.setObjectName("actionExit")
         self.actionAbout = QtWidgets.QAction(MainWindow)
         self.actionAbout.setObjectName("actionAbout")
+        self.actionCheck_for_updates = QtWidgets.QAction(MainWindow)
+        self.actionCheck_for_updates.setObjectName("actionCheck_for_updates")
         self.menuFile.addAction(self.actionExit)
         self.menuHelp.addAction(self.actionAbout)
+        self.menuHelp.addAction(self.actionCheck_for_updates)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
 
@@ -180,3 +183,4 @@ class Ui_MainWindow(object):
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionExit.setShortcut(_translate("MainWindow", "Ctrl+Q"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
+        self.actionCheck_for_updates.setText(_translate("MainWindow", "Check for updates"))

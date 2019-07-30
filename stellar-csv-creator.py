@@ -2,14 +2,11 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from gui.main_window import Ui_MainWindow
 from gui.about import Ui_Dialog
 from datetime import datetime
-from PyQt5.QtCore import pyqtSlot
 import logging
 import csv
 import json
 import requests
 import sys
-
-VERSION = "0.1.0"
 
 logging.basicConfig(filename="stellar-csv-creator.log", format=f"%(asctime)s:%(levelname)s:%(message)s",
                     datefmt="%Y-%m-%dT%H:%M:%SZ", level=logging.INFO)
@@ -17,6 +14,7 @@ logging.basicConfig(filename="stellar-csv-creator.log", format=f"%(asctime)s:%(l
 
 class CSVCreator:
     def __init__(self):
+        self.version = "0.1.0"
         sys.excepthook = self.error_handler
         self.config_path = "config.json"
         self.config = json.load(open(self.config_path))
@@ -28,7 +26,7 @@ class CSVCreator:
         MainWindow = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(MainWindow)
-        MainWindow.setWindowTitle(f"Stellar CSV Creator v{VERSION}")
+        MainWindow.setWindowTitle(f"Stellar CSV Creator v{self.version}")
         self.app.setStyle('Fusion')
         self.make_links()
         self.get_config()
@@ -97,6 +95,7 @@ class CSVCreator:
         self.ui.resetButton.clicked.connect(self.get_config)
         self.ui.clearButton.clicked.connect(self.clear_button)
         self.ui.Address.textChanged['QString'].connect(self.ui.clearButton.show)
+        self.ui.actionCheck_for_updates.triggered.connect(self.check_for_updates)
 
     def clear_button(self):
         self.ui.Address.clear()
@@ -112,14 +111,38 @@ class CSVCreator:
         else:
             self.ui.CreateCSV.setEnabled(False)
 
+    def message_box(self, text, warning=False, info=False):
+        msgBox = QtWidgets.QMessageBox()
+        msgBox_icon = QtGui.QIcon()
+        msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        msgBox.setWindowIcon(msgBox_icon)
+        msgBox.setTextFormat(QtCore.Qt.RichText)
+        msgBox.setWindowTitle("Notice")
+        if warning:
+            msgBox.setIcon(msgBox.Warning)
+        if info:
+            msgBox.setIcon(msgBox.Information)
+        msgBox.setText(text)
+        msgBox.addButton(QtWidgets.QPushButton('OK'), QtWidgets.QMessageBox.YesRole)
+        msgBox.exec_()
+
     def about_dialog(self):
         Dialog = QtWidgets.QDialog(None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
                                    QtCore.Qt.WindowCloseButtonHint)
         about = Ui_Dialog()
         about.setupUi(Dialog)
-        about.labelVersion.setText(f"<html><head/><body><p>Version {VERSION}</p></body></html>")
+        about.labelVersion.setText(f"<html><head/><body><p>Stellar CSV Creator v{self.version}</p></body></html>")
         Dialog.show()
         Dialog.exec_()
+
+    def check_for_updates(self):
+        response = requests.get("https://api.github.com/repos/usertxt/stellar-csv-creator/releases").json()
+        new_version = response[0]["tag_name"].replace("v", "")
+        if new_version > self.version:
+            self.message_box("<a href=\"https://github.com/usertxt/stellar-csv-creator/releases/latest\">"
+                             f"Version {new_version} is available</a>", info=True)
+        else:
+            self.message_box("You are using the latest release", info=True)
 
     def create_csv(self):
         if not self.ui.Address.text() or not self.ui.StartDate.text():
@@ -201,21 +224,10 @@ class CSVCreator:
 
     def save_settings(self):
         try:
-            def theme_warning():
-                msgBox = QtWidgets.QMessageBox()
-                msgBox_icon = QtGui.QIcon()
-                msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-                msgBox.setWindowIcon(msgBox_icon)
-                msgBox.setWindowTitle("Notice")
-                msgBox.setIcon(msgBox.Warning)
-                msgBox.setText("Restart required to change theme")
-                msgBox.addButton(QtWidgets.QPushButton('OK'), QtWidgets.QMessageBox.YesRole)
-                msgBox.exec_()
-
             if self.ui.radioButtonLightMode.isChecked() and self.theme == "dark":
-                theme_warning()
+                self.message_box("Restart required to change theme", warning=True)
             elif self.ui.radioButtonDarkMode.isChecked() and self.theme == "default":
-                theme_warning()
+                self.message_box("Restart required to change theme", warning=True)
 
             self.csv_config["MIN_THRESH"] = self.ui.MinThresh.text()
             self.csv_config["MAX_THRESH"] = self.ui.MaxThresh.text()
