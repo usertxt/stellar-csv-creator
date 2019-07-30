@@ -2,6 +2,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from gui.main_window import Ui_MainWindow
 from gui.about import Ui_Dialog
 from datetime import datetime
+from PyQt5.QtCore import pyqtSlot
 import logging
 import csv
 import json
@@ -31,6 +32,7 @@ class CSVCreator:
         self.app.setStyle('Fusion')
         self.make_links()
         self.get_config()
+        self.ui.clearButton.hide()
         if self.theme == "dark":
             self.dark_theme()
 
@@ -54,10 +56,10 @@ class CSVCreator:
         palette.setColor(QtGui.QPalette.LinkVisited, QtCore.Qt.yellow)
 
         self.app.setPalette(palette)
-        self.ui.CreateCSV.setStyleSheet(".QPushButton:disabled {color: gray}")
-        self.ui.GetBalance.setStyleSheet(".QPushButton:disabled {color: gray}")
-        self.ui.radioButtonDarkMode.setStyleSheet(".QRadioButton:disabled {color: gray}")
-        self.ui.radioButtonLightMode.setStyleSheet(".QRadioButton:disabled {color: gray}")
+        self.ui.CreateCSV.setStyleSheet("QPushButton:disabled {color: #a1a1a1}")
+        self.ui.GetBalance.setStyleSheet("QPushButton:disabled {color: #a1a1a1}")
+        self.ui.radioButtonDarkMode.setStyleSheet("QRadioButton:disabled {color: #a1a1a1}")
+        self.ui.radioButtonLightMode.setStyleSheet("QRadioButton:disabled {color: #a1a1a1}")
 
     def get_config(self):
         rb_light = self.ui.radioButtonLightMode
@@ -93,12 +95,22 @@ class CSVCreator:
         self.ui.Address.textChanged.connect(self.enable_buttons)
         self.ui.StartDate.textChanged.connect(self.enable_buttons)
         self.ui.resetButton.clicked.connect(self.get_config)
+        self.ui.clearButton.clicked.connect(self.clear_button)
+        self.ui.Address.textChanged['QString'].connect(self.ui.clearButton.show)
+
+    def clear_button(self):
+        self.ui.Address.clear()
+        self.ui.clearButton.hide()
 
     def enable_buttons(self):
         if self.ui.Address.text():
             self.ui.GetBalance.setEnabled(True)
+        else:
+            self.ui.GetBalance.setEnabled(False)
         if self.ui.Address.text() and self.ui.StartDate.text():
             self.ui.CreateCSV.setEnabled(True)
+        else:
+            self.ui.CreateCSV.setEnabled(False)
 
     def about_dialog(self):
         Dialog = QtWidgets.QDialog(None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
@@ -191,7 +203,12 @@ class CSVCreator:
         try:
             def theme_warning():
                 msgBox = QtWidgets.QMessageBox()
-                msgBox.setText('Restart required to change theme')
+                msgBox_icon = QtGui.QIcon()
+                msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+                msgBox.setWindowIcon(msgBox_icon)
+                msgBox.setWindowTitle("Notice")
+                msgBox.setIcon(msgBox.Warning)
+                msgBox.setText("Restart required to change theme")
                 msgBox.addButton(QtWidgets.QPushButton('OK'), QtWidgets.QMessageBox.YesRole)
                 msgBox.exec_()
 
