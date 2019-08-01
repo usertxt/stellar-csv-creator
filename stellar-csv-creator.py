@@ -16,26 +16,79 @@ class CSVCreator:
     def __init__(self):
         self.version = "0.1.0"
         sys.excepthook = self.error_handler
+
+        # Set config
         self.config_path = "config.json"
         self.config = json.load(open(self.config_path))
         self.csv_config = self.config["CSV"]
         self.app_config = self.config["APP"]
         self.theme = self.app_config["THEME"]
 
+        # Set up GUI
         self.app = QtWidgets.QApplication(sys.argv)
         MainWindow = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(MainWindow)
         MainWindow.setWindowTitle(f"Stellar CSV Creator v{self.version}")
         self.app.setStyle('Fusion')
-        self.make_links()
-        self.get_config()
-        self.ui.clearButton.hide()
+
+        # Set icons
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("gui/icons/stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        MainWindow.setWindowIcon(icon)
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap("gui/icons/clear-text.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.ui.clearButton.setIcon(icon1)
+
+        # Set theme
         if self.theme == "dark":
             self.dark_theme()
 
+        # Address Book context menu
+        self.useAction = QtWidgets.QAction("Use address", None)
+        self.deleteAction = QtWidgets.QAction("Delete address", None)
+        self.ui.listAddress.addAction(self.useAction)
+        self.ui.listAddress.addAction(self.deleteAction)
+
+        # Backend commands
+        self.get_config()
+        self.ui.clearButton.hide()
+        self.load_addresses()
+        self.make_links()
+
         MainWindow.show()
         sys.exit(self.app.exec_())
+
+    # Address book commands
+    def load_addresses(self):
+        with open("addresses.txt", "r") as addresses:
+            for address in addresses:
+                if len(address.strip()) != 0:
+                    self.ui.listAddress.addItem(address.strip())
+
+    def add_address(self):
+        row = self.ui.listAddress.currentRow()
+        address = self.ui.ABAddress.text()
+        if len(address) != 0:
+            self.ui.listAddress.insertItem(row, address)
+            with open("addresses.txt", "a") as addresses:
+                addresses.write(f"{self.ui.ABAddress.text().strip()}\n")
+            self.ui.ABAddress.clear()
+
+    def use_address(self):
+        row = self.ui.listAddress.currentRow()
+        self.ui.Address.setText(self.ui.listAddress.item(row).text())
+
+    def delete_address(self):
+        row = self.ui.listAddress.currentRow()
+        address = self.ui.listAddress.item(row).text()
+        self.ui.listAddress.takeItem(row)
+        with open("addresses.txt", "r") as f:
+            lines = f.readlines()
+        with open("addresses.txt", "w") as f:
+            for line in lines:
+                if line.strip("\n") != address:
+                    f.write(line)
 
     def dark_theme(self):
         palette = QtGui.QPalette()
@@ -96,6 +149,10 @@ class CSVCreator:
         self.ui.clearButton.clicked.connect(self.clear_button)
         self.ui.Address.textChanged['QString'].connect(self.ui.clearButton.show)
         self.ui.actionCheck_for_updates.triggered.connect(self.check_for_updates)
+        self.ui.addAddress.clicked.connect(self.add_address)
+        self.useAction.triggered.connect(self.use_address)
+        self.deleteAction.triggered.connect(self.delete_address)
+        self.ui.listAddress.itemActivated.connect(self.use_address)
 
     def clear_button(self):
         self.ui.Address.clear()
