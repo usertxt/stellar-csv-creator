@@ -2,7 +2,6 @@
 .idea/
 dev/
 *.log
-*.csv
 localconfig.json
 
 # Byte-compiled / optimized / DLL files

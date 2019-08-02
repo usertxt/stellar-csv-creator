@@ -1,6 +1,7 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
 from gui.main_window import Ui_MainWindow
 from gui.about import Ui_Dialog
+from gui.edit_address import EditDialog
 from datetime import datetime
 import logging
 import csv
@@ -23,6 +24,7 @@ class CSVCreator:
         self.csv_config = self.config["CSV"]
         self.app_config = self.config["APP"]
         self.theme = self.app_config["THEME"]
+        self.saved_addresses = "saved_addresses.csv"
 
         # Set up GUI
         self.app = QtWidgets.QApplication(sys.argv)
@@ -44,11 +46,17 @@ class CSVCreator:
         if self.theme == "dark":
             self.dark_theme()
 
-        # Address Book context menu
-        self.useAction = QtWidgets.QAction("Use address", None)
-        self.deleteAction = QtWidgets.QAction("Delete address", None)
+        # Configure Address Book
+        self.useAction = QtWidgets.QAction("Use", None)
+        self.editAction = QtWidgets.QAction("Edit", None)
+        self.deleteAction = QtWidgets.QAction("Delete", None)
         self.ui.listAddress.addAction(self.useAction)
+        self.ui.listAddress.addAction(self.editAction)
         self.ui.listAddress.addAction(self.deleteAction)
+        self.ui.listAddress.setColumnWidth(0, 75)
+        self.ui.listAddress.verticalHeader().setVisible(False)
+        self.ui.listAddress.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        self.ui.listAddress.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
 
         # Backend commands
         self.get_config()
@@ -59,36 +67,68 @@ class CSVCreator:
         MainWindow.show()
         sys.exit(self.app.exec_())
 
-    # Address book commands
     def load_addresses(self):
-        with open("addresses.txt", "r") as addresses:
-            for address in addresses:
-                if len(address.strip()) != 0:
-                    self.ui.listAddress.addItem(address.strip())
+        try:
+            with open(self.saved_addresses, "r", newline='') as csv_file:
+                self.ui.listAddress.setRowCount(0)
+                self.ui.listAddress.setColumnCount(2)
+                my_file = csv.reader(csv_file, delimiter=',', quotechar='|')
+                for row_data in my_file:
+                    row = self.ui.listAddress.rowCount()
+                    self.ui.listAddress.insertRow(row)
+                    if len(row_data) > 2:
+                        self.ui.listAddress.setColumnCount(len(row_data))
+                    for column, stuff in enumerate(row_data):
+                        item = QtWidgets.QTableWidgetItem(stuff)
+                        self.ui.listAddress.setItem(row, column, item)
+        except IOError:
+            f = open(self.saved_addresses, "w", newline='')
+            f.close()
 
     def add_address(self):
-        row = self.ui.listAddress.currentRow()
-        address = self.ui.ABAddress.text()
-        if len(address) != 0:
-            self.ui.listAddress.insertItem(row, address)
-            with open("addresses.txt", "a") as addresses:
-                addresses.write(f"{self.ui.ABAddress.text().strip()}\n")
-            self.ui.ABAddress.clear()
+        try:
+            nickname = self.ui.nicknameAddress.text()
+            address = self.ui.ABAddress.text()
+            if len(address) != 0:
+                fields = [nickname, address]
+                with open(self.saved_addresses, "a", newline='') as csv_file:
+                    writer = csv.writer(csv_file)
+                    writer.writerow(fields)
+                self.load_addresses()
+        except Exception as e:
+            print(e)
+
+    def edit_address(self):
+        try:
+            dialog = EditDialog()
+            row = self.ui.listAddress.currentRow()
+            dialog.nickname.setText(self.ui.listAddress.item(row, 0).text())
+            dialog.address.setText(self.ui.listAddress.item(row, 1).text())
+            dialog.exec_()
+        except Exception as e:
+            print(e)
 
     def use_address(self):
         row = self.ui.listAddress.currentRow()
-        self.ui.Address.setText(self.ui.listAddress.item(row).text())
+        self.ui.Address.setText(self.ui.listAddress.item(row, 1).text())
 
     def delete_address(self):
-        row = self.ui.listAddress.currentRow()
-        address = self.ui.listAddress.item(row).text()
-        self.ui.listAddress.takeItem(row)
-        with open("addresses.txt", "r") as f:
-            lines = f.readlines()
-        with open("addresses.txt", "w") as f:
-            for line in lines:
-                if line.strip("\n") != address:
-                    f.write(line)
+        try:
+            row = self.ui.listAddress.currentRow()
+            column = self.ui.listAddress.currentColumn()
+            address = self.ui.listAddress.item(row, 1).text()
+            self.ui.listAddress.takeItem(row, column)
+            with open(self.saved_addresses, "r") as f:
+                data = list(csv.reader(f))
+
+            with open(self.saved_addresses, "w", newline='') as f:
+                writer = csv.writer(f)
+                for row in data:
+                    if row[1] != address:
+                        writer.writerow(row)
+            self.load_addresses()
+        except Exception as e:
+            print(e)
 
     def dark_theme(self):
         palette = QtGui.QPalette()
@@ -151,6 +191,7 @@ class CSVCreator:
         self.ui.actionCheck_for_updates.triggered.connect(self.check_for_updates)
         self.ui.addAddress.clicked.connect(self.add_address)
         self.useAction.triggered.connect(self.use_address)
+        self.editAction.triggered.connect(self.edit_address)
         self.deleteAction.triggered.connect(self.delete_address)
         self.ui.listAddress.itemActivated.connect(self.use_address)
 
