@@ -53,9 +53,10 @@ class CSVCreator:
         self.ui.listAddress.addAction(self.useAction)
         self.ui.listAddress.addAction(self.editAction)
         self.ui.listAddress.addAction(self.deleteAction)
-        self.ui.listAddress.setColumnWidth(0, 75)
+        self.ui.listAddress.setColumnWidth(0, 90)
         self.ui.listAddress.verticalHeader().setVisible(False)
-        self.ui.listAddress.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        self.ui.listAddress.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        # self.ui.listAddress.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
         self.ui.listAddress.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
 
         # Backend commands
@@ -105,6 +106,25 @@ class CSVCreator:
             dialog.nickname.setText(self.ui.listAddress.item(row, 0).text())
             dialog.address.setText(self.ui.listAddress.item(row, 1).text())
             dialog.exec_()
+
+            new_nickname = dialog.getInputs()[0]
+            new_address = dialog.getInputs()[1]
+            fields = [new_nickname, new_address]
+            column = self.ui.listAddress.currentColumn()
+            address = self.ui.listAddress.item(row, 1).text()
+            self.ui.listAddress.takeItem(row, column)
+
+            with open(self.saved_addresses, "r") as f:
+                data = list(csv.reader(f))
+
+            with open(self.saved_addresses, "w", newline='') as f:
+                writer = csv.writer(f)
+                for row in data:
+                    if row[1] != address:
+                        writer.writerow(row)
+                writer.writerow(fields)
+
+            self.load_addresses()
         except Exception as e:
             print(e)
 
