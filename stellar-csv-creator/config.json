@@ -1,6 +1,6 @@
 {
   "APP": {
-    "THEME": "dark"
+    "THEME": "default"
   },
   "CSV": {
     "MIN_THRESH": "1",

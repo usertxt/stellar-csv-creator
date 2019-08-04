@@ -1,7 +1,6 @@
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5 import QtGui, QtCore, QtWidgets, QtSql
 from gui.main_window import Ui_MainWindow
 from gui.about import Ui_Dialog
-from gui.edit_address import EditDialog
 from datetime import datetime
 import logging
 import csv
@@ -41,114 +40,83 @@ class CSVCreator:
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap("gui/icons/clear-text.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ui.clearButton.setIcon(icon1)
+        self.ui.ABclearButton.setIcon(icon1)
 
         # Set theme
         if self.theme == "dark":
             self.dark_theme()
 
-        # Configure Address Book
+        # Create DB
+        self.db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
+        self.db.setDatabaseName('addresses.db')
+        if not self.db.open():
+            QtWidgets.QMessageBox.critical(None, ("Cannot open database"),
+                                           ("Unable to establish a database connection.\n"
+                                            "This example needs SQLite support. Please read "
+                                            "the Qt SQL driver documentation for information "
+                                            "how to build it.\n\n"
+                                            "Click Cancel to exit."),
+                                           QtWidgets.QMessageBox.Cancel)
+        # return False
+
+        self.query = QtSql.QSqlQuery()
+        self.query.exec_("""CREATE TABLE IF NOT EXISTS addresses (id integer primary key autoincrement,
+                                                         Nickname VARCHAR(20),
+                                                        Address VARCHAR(20))""")
+
+        # Load address book table
+        self.view = self.ui.tableAddresses
+        self.model = QtSql.QSqlTableModel()
+        self.model.setTable("addresses")
+        self.load_addresses()
+
+        # Address book context menu
         self.useAction = QtWidgets.QAction("Use", None)
         self.editAction = QtWidgets.QAction("Edit", None)
         self.deleteAction = QtWidgets.QAction("Delete", None)
-        self.ui.listAddress.addAction(self.useAction)
-        self.ui.listAddress.addAction(self.editAction)
-        self.ui.listAddress.addAction(self.deleteAction)
-        self.ui.listAddress.setColumnWidth(0, 90)
-        self.ui.listAddress.verticalHeader().setVisible(False)
-        self.ui.listAddress.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        # self.ui.listAddress.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
-        self.ui.listAddress.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        self.ui.tableAddresses.addAction(self.useAction)
+        self.ui.tableAddresses.addAction(self.editAction)
+        self.ui.tableAddresses.addAction(self.deleteAction)
 
-        # Backend commands
+        # Configure address book table
+        self.ui.tableAddresses.verticalHeader().setVisible(False)
+        self.ui.tableAddresses.setColumnHidden(0, True)
+        self.ui.tableAddresses.setColumnWidth(1, 90)
+        self.ui.tableAddresses.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.ui.tableAddresses.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+
+        # Backend functions
         self.get_config()
         self.ui.clearButton.hide()
-        self.load_addresses()
+        self.ui.ABclearButton.hide()
         self.make_links()
 
         MainWindow.show()
         sys.exit(self.app.exec_())
 
     def load_addresses(self):
-        try:
-            with open(self.saved_addresses, "r", newline='') as csv_file:
-                self.ui.listAddress.setRowCount(0)
-                self.ui.listAddress.setColumnCount(2)
-                my_file = csv.reader(csv_file, delimiter=',', quotechar='|')
-                for row_data in my_file:
-                    row = self.ui.listAddress.rowCount()
-                    self.ui.listAddress.insertRow(row)
-                    if len(row_data) > 2:
-                        self.ui.listAddress.setColumnCount(len(row_data))
-                    for column, stuff in enumerate(row_data):
-                        item = QtWidgets.QTableWidgetItem(stuff)
-                        self.ui.listAddress.setItem(row, column, item)
-        except IOError:
-            f = open(self.saved_addresses, "w", newline='')
-            f.close()
+        self.model.select()
+        self.view.setModel(self.model)
 
     def add_address(self):
-        try:
-            nickname = self.ui.nicknameAddress.text()
-            address = self.ui.ABAddress.text()
-            if len(address) != 0:
-                fields = [nickname, address]
-                with open(self.saved_addresses, "a", newline='') as csv_file:
-                    writer = csv.writer(csv_file)
-                    writer.writerow(fields)
-                self.load_addresses()
-        except Exception as e:
-            print(e)
+        address = self.ui.ABAddress.text()
+        nickname = self.ui.ABNickname.text()
+        self.query.exec_(f"INSERT INTO addresses (Nickname, Address) values('{nickname}', '{address}')")
+        self.load_addresses()
 
     def edit_address(self):
-        try:
-            dialog = EditDialog()
-            row = self.ui.listAddress.currentRow()
-            dialog.nickname.setText(self.ui.listAddress.item(row, 0).text())
-            dialog.address.setText(self.ui.listAddress.item(row, 1).text())
-            dialog.exec_()
-
-            new_nickname = dialog.getInputs()[0]
-            new_address = dialog.getInputs()[1]
-            fields = [new_nickname, new_address]
-            column = self.ui.listAddress.currentColumn()
-            address = self.ui.listAddress.item(row, 1).text()
-            self.ui.listAddress.takeItem(row, column)
-
-            with open(self.saved_addresses, "r") as f:
-                data = list(csv.reader(f))
-
-            with open(self.saved_addresses, "w", newline='') as f:
-                writer = csv.writer(f)
-                for row in data:
-                    if row[1] != address:
-                        writer.writerow(row)
-                writer.writerow(fields)
-
-            self.load_addresses()
-        except Exception as e:
-            print(e)
+        index = self.ui.tableAddresses.selectionModel().currentIndex()
+        self.ui.tableAddresses.edit(index)
 
     def use_address(self):
-        row = self.ui.listAddress.currentRow()
-        self.ui.Address.setText(self.ui.listAddress.item(row, 1).text())
+        index = self.ui.tableAddresses.selectionModel().currentIndex()
+        value = index.sibling(index.row(), 2).data()
+        self.ui.Address.setText(value)
 
     def delete_address(self):
-        try:
-            row = self.ui.listAddress.currentRow()
-            column = self.ui.listAddress.currentColumn()
-            address = self.ui.listAddress.item(row, 1).text()
-            self.ui.listAddress.takeItem(row, column)
-            with open(self.saved_addresses, "r") as f:
-                data = list(csv.reader(f))
-
-            with open(self.saved_addresses, "w", newline='') as f:
-                writer = csv.writer(f)
-                for row in data:
-                    if row[1] != address:
-                        writer.writerow(row)
-            self.load_addresses()
-        except Exception as e:
-            print(e)
+        index = self.ui.tableAddresses.selectionModel().currentIndex()
+        self.model.removeRow(index.row())
+        self.load_addresses()
 
     def dark_theme(self):
         palette = QtGui.QPalette()
@@ -171,6 +139,7 @@ class CSVCreator:
         self.ui.GetBalance.setStyleSheet("QPushButton:disabled {color: #a1a1a1}")
         self.ui.radioButtonDarkMode.setStyleSheet("QRadioButton:disabled {color: #a1a1a1}")
         self.ui.radioButtonLightMode.setStyleSheet("QRadioButton:disabled {color: #a1a1a1}")
+        self.ui.addAddress.setStyleSheet("QPushButton:disabled {color: #a1a1a1}")
 
     def get_config(self):
         rb_light = self.ui.radioButtonLightMode
@@ -198,26 +167,38 @@ class CSVCreator:
             rb_dark.setDisabled(True)
 
     def make_links(self):
-        self.ui.CreateCSV.clicked.connect(self.create_csv)
-        self.ui.GetBalance.clicked.connect(self.get_balance)
-        self.ui.SaveSettings.clicked.connect(self.save_settings)
+        # Menu bar
         self.ui.actionExit.triggered.connect(self.exit_app)
         self.ui.actionAbout.triggered.connect(self.about_dialog)
-        self.ui.Address.textChanged.connect(self.enable_buttons)
-        self.ui.StartDate.textChanged.connect(self.enable_buttons)
-        self.ui.resetButton.clicked.connect(self.get_config)
-        self.ui.clearButton.clicked.connect(self.clear_button)
-        self.ui.Address.textChanged['QString'].connect(self.ui.clearButton.show)
         self.ui.actionCheck_for_updates.triggered.connect(self.check_for_updates)
+        # Main tab
+        self.ui.CreateCSV.clicked.connect(self.create_csv)
+        self.ui.GetBalance.clicked.connect(self.get_balance)
+        self.ui.Address.textChanged.connect(self.enable_buttons)
+        self.ui.Address.returnPressed.connect(self.ui.CreateCSV.click)
+        self.ui.Address.textChanged['QString'].connect(self.ui.clearButton.show)
+        self.ui.StartDate.textChanged.connect(self.enable_buttons)
+        self.ui.clearButton.clicked.connect(self.clear_button)
+        # Addresses tab
+        self.ui.ABAddress.returnPressed.connect(self.ui.addAddress.click)
+        self.ui.ABAddress.textChanged.connect(self.enable_buttons)
+        self.ui.ABAddress.textChanged['QString'].connect(self.ui.ABclearButton.show)
+        self.ui.ABclearButton.clicked.connect(self.clear_button_ab)
         self.ui.addAddress.clicked.connect(self.add_address)
         self.useAction.triggered.connect(self.use_address)
         self.editAction.triggered.connect(self.edit_address)
         self.deleteAction.triggered.connect(self.delete_address)
-        self.ui.listAddress.itemActivated.connect(self.use_address)
+        # Settings tab
+        self.ui.SaveSettings.clicked.connect(self.save_settings)
+        self.ui.resetButton.clicked.connect(self.get_config)
 
     def clear_button(self):
         self.ui.Address.clear()
         self.ui.clearButton.hide()
+
+    def clear_button_ab(self):
+        self.ui.ABAddress.clear()
+        self.ui.ABclearButton.hide()
 
     def enable_buttons(self):
         if self.ui.Address.text():
@@ -228,18 +209,26 @@ class CSVCreator:
             self.ui.CreateCSV.setEnabled(True)
         else:
             self.ui.CreateCSV.setEnabled(False)
+        if self.ui.ABAddress.text():
+            self.ui.addAddress.setEnabled(True)
+        else:
+            self.ui.addAddress.setEnabled(False)
 
-    def message_box(self, text, warning=False, info=False):
+    def message_box(self, text, warning=False, info=False, critical=False):
         msgBox = QtWidgets.QMessageBox()
         msgBox_icon = QtGui.QIcon()
         msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         msgBox.setWindowIcon(msgBox_icon)
         msgBox.setTextFormat(QtCore.Qt.RichText)
-        msgBox.setWindowTitle("Notice")
         if warning:
+            msgBox.setWindowTitle("WARNING")
             msgBox.setIcon(msgBox.Warning)
         if info:
+            msgBox.setWindowTitle("NOTICE")
             msgBox.setIcon(msgBox.Information)
+        if critical:
+            msgBox.setWindowTitle("ERROR")
+            msgBox.setIcon(msgBox.Critical)
         msgBox.setText(text)
         msgBox.addButton(QtWidgets.QPushButton('OK'), QtWidgets.QMessageBox.YesRole)
         msgBox.exec_()
@@ -343,9 +332,9 @@ class CSVCreator:
     def save_settings(self):
         try:
             if self.ui.radioButtonLightMode.isChecked() and self.theme == "dark":
-                self.message_box("Restart required to change theme", warning=True)
+                self.message_box("Restart required to change theme", info=True)
             elif self.ui.radioButtonDarkMode.isChecked() and self.theme == "default":
-                self.message_box("Restart required to change theme", warning=True)
+                self.message_box("Restart required to change theme", info=True)
 
             self.csv_config["MIN_THRESH"] = self.ui.MinThresh.text()
             self.csv_config["MAX_THRESH"] = self.ui.MaxThresh.text()
@@ -368,8 +357,10 @@ class CSVCreator:
         console_append = f"<html><b>{info}</b></html>"
         if log:
             logging.info(info)
-        if error:
+        if error and self.theme == "default":
             console_append = f"<html><font color=red><b>{info}</b></font></html>"
+        elif error and self.theme == "dark":
+            console_append = f"<html><font color=#ff4f4f><b>{info}</b></font></html>"
 
         return self.ui.output.append(console_append)
 
