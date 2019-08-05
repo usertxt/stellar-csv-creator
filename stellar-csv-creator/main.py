@@ -179,13 +179,13 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.GetBalance.clicked.connect(self.get_balance)
         self.Address.textChanged.connect(self.enable_buttons)
         self.Address.returnPressed.connect(self.CreateCSV.click)
-        self.Address.textChanged['QString'].connect(self.clearButton.show)
+        self.Address.textChanged['QString'].connect(self.enable_buttons)
         self.StartDate.textChanged.connect(self.enable_buttons)
         self.clearButton.clicked.connect(self.clear_button)
         # Addresses tab
         self.ABAddress.returnPressed.connect(self.addAddress.click)
         self.ABAddress.textChanged.connect(self.enable_buttons)
-        self.ABAddress.textChanged['QString'].connect(self.ABclearButton.show)
+        self.ABAddress.textChanged['QString'].connect(self.enable_buttons)
         self.ABclearButton.clicked.connect(self.clear_button_ab)
         self.addAddress.clicked.connect(self.add_address)
         self.useAction.triggered.connect(self.use_address)
@@ -208,14 +208,26 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             self.GetBalance.setEnabled(True)
         else:
             self.GetBalance.setEnabled(False)
+
         if self.Address.text() and self.StartDate.text():
             self.CreateCSV.setEnabled(True)
         else:
             self.CreateCSV.setEnabled(False)
+
         if self.ABAddress.text():
             self.addAddress.setEnabled(True)
         else:
             self.addAddress.setEnabled(False)
+
+        if self.Address.text() == "" and self.Address.textChanged['QString']:
+            self.clearButton.hide()
+        else:
+            self.clearButton.show()
+
+        if self.ABAddress.text() == "" and self.ABAddress.textChanged['QString']:
+            self.ABclearButton.hide()
+        else:
+            self.ABclearButton.show()
 
     def message_box(self, text, warning=False, info=False, critical=False):
         msgBox = QtWidgets.QMessageBox()
