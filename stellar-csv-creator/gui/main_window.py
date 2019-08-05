@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(600, 260)
+        MainWindow.resize(600, 270)
         MainWindow.setWindowTitle("")
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("../gui/icons/stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)

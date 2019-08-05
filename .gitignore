@@ -2,6 +2,7 @@
 .idea/
 dev/
 *.log
+*.csv
 addresses.db
 
 # Byte-compiled / optimized / DLL files
