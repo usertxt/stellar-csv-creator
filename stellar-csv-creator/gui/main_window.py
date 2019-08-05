@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(600, 270)
+        MainWindow.resize(600, 300)
         MainWindow.setWindowTitle("")
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("../gui/icons/stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
@@ -39,7 +39,7 @@ class Ui_MainWindow(object):
         self.labelStartDate.setGeometry(QtCore.QRect(32, 10, 50, 20))
         self.labelStartDate.setObjectName("labelStartDate")
         self.output = QtWidgets.QTextBrowser(self.tab)
-        self.output.setGeometry(QtCore.QRect(20, 60, 450, 101))
+        self.output.setGeometry(QtCore.QRect(20, 60, 450, 141))
         self.output.setObjectName("output")
         self.labelAddress = QtWidgets.QLabel(self.tab)
         self.labelAddress.setGeometry(QtCore.QRect(327, 10, 75, 16))
@@ -79,7 +79,7 @@ class Ui_MainWindow(object):
         self.labelABNickname.setGeometry(QtCore.QRect(25, 10, 48, 16))
         self.labelABNickname.setObjectName("labelABNickname")
         self.tableAddresses = QtWidgets.QTableView(self.tab_2)
-        self.tableAddresses.setGeometry(QtCore.QRect(5, 55, 560, 115))
+        self.tableAddresses.setGeometry(QtCore.QRect(5, 55, 560, 151))
         self.tableAddresses.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.tableAddresses.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tableAddresses.setObjectName("tableAddresses")
@@ -131,6 +131,7 @@ class Ui_MainWindow(object):
         self.labelTheme.setObjectName("labelTheme")
         self.resetButton = QtWidgets.QPushButton(self.tab_3)
         self.resetButton.setGeometry(QtCore.QRect(100, 110, 75, 20))
+        self.resetButton.setToolTip("")
         self.resetButton.setObjectName("resetButton")
         self.tabWidget.addTab(self.tab_3, "")
         self.verticalLayout.addWidget(self.tabWidget)
@@ -185,38 +186,40 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         self.labelEndDate.setText(_translate("MainWindow", "End Date"))
-        self.EndDate.setToolTip(_translate("MainWindow", "End date range"))
+        self.EndDate.setToolTip(_translate("MainWindow", "End Date (optional): Create a range of transactions received with a specific end date"))
         self.EndDate.setPlaceholderText(_translate("MainWindow", "YYYY-MM-DD"))
-        self.CreateCSV.setStatusTip(_translate("MainWindow", "Create CSV"))
+        self.CreateCSV.setToolTip(_translate("MainWindow", "Create CSV file with chosen parameters"))
         self.CreateCSV.setText(_translate("MainWindow", "Create CSV"))
-        self.GetBalance.setStatusTip(_translate("MainWindow", "Get Balance"))
+        self.GetBalance.setToolTip(_translate("MainWindow", "Print the balance"))
         self.GetBalance.setText(_translate("MainWindow", "Get Balance"))
-        self.StartDate.setToolTip(_translate("MainWindow", "Start date range (required)"))
+        self.StartDate.setToolTip(_translate("MainWindow", "Start Date (required): The date of the oldest transaction received"))
         self.StartDate.setPlaceholderText(_translate("MainWindow", "YYYY-MM-DD"))
         self.labelStartDate.setText(_translate("MainWindow", "Start Date"))
         self.output.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; font-weight:600;\">Instructions</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Start by putting your Stellar address into the <span style=\" font-weight:600;\">Address</span> field, then input the date of the oldest transation you would like to add to the CSV file into the <span style=\" font-weight:600;\">Start Date</span> field. The <span style=\" font-weight:600;\">Start Date</span> field is required.</p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Information</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Start Date</span> (required): The date of the oldest transaction received</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">End Date</span> (optional): Create a range of transactions received with a specific end date</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Stellar Address</span> (required): A Stellar address to receive transactions from</p></body></html>"))
         self.labelAddress.setText(_translate("MainWindow", "Stellar Address"))
-        self.Address.setToolTip(_translate("MainWindow", "Stellar address (required)"))
+        self.Address.setToolTip(_translate("MainWindow", "Stellar Address (required): A Stellar address to receive transactions from"))
         self.clearButton.setToolTip(_translate("MainWindow", "Clear address"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Main"))
         self.ABAddress.setToolTip(_translate("MainWindow", "Stellar address (required)"))
+        self.addAddress.setToolTip(_translate("MainWindow", "Add to address book"))
         self.addAddress.setText(_translate("MainWindow", "Add"))
-        self.ABNickname.setToolTip(_translate("MainWindow", "An optional nickname"))
+        self.ABNickname.setToolTip(_translate("MainWindow", "Nickname (optional)"))
         self.labelABAddress.setText(_translate("MainWindow", "Stellar Address"))
         self.labelABNickname.setText(_translate("MainWindow", "Nickname (optional)"))
         self.ABclearButton.setToolTip(_translate("MainWindow", "Clear address"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Addresses"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Address Book"))
         self.labelSource.setText(_translate("MainWindow", "Source"))
         self.labelMinThresh.setText(_translate("MainWindow", "Minimum Threshold"))
         self.labelMemo.setText(_translate("MainWindow", "Memo"))
         self.labelMaxThresh.setText(_translate("MainWindow", "Maximum Threshold"))
-        self.SaveSettings.setStatusTip(_translate("MainWindow", "Save chosen settings"))
+        self.SaveSettings.setToolTip(_translate("MainWindow", "Save chosen settings"))
         self.SaveSettings.setText(_translate("MainWindow", "Save Settings"))
         self.radioButtonLightMode.setText(_translate("MainWindow", "Light"))
         self.radioButtonDarkMode.setText(_translate("MainWindow", "Dark"))

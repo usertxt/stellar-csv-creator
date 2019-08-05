@@ -15,7 +15,7 @@ logging.basicConfig(filename="stellar-csv-creator.log", format=f"%(asctime)s:%(l
 class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(CSVCreator, self).__init__(parent)
-        self.version = "0.1.0"
+        self.version = "0.2.0"
         sys.excepthook = self.error_handler
 
         self.app = QtWidgets.QApplication([])
@@ -27,7 +27,6 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.csv_config = self.config["CSV"]
         self.app_config = self.config["APP"]
         self.theme = self.app_config["THEME"]
-        self.saved_addresses = "saved_addresses.csv"
 
         # Configure GUI
         self.setWindowTitle(f"Stellar CSV Creator v{self.version}")
@@ -95,6 +94,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         nickname = self.ABNickname.text()
         self.query.exec_(f"INSERT INTO addresses (Nickname, Address) values('{nickname}', '{address}')")
         self.ABAddress.clear()
+        self.ABNickname.clear()
         self.load_addresses()
 
     def edit_address(self):
@@ -337,7 +337,11 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             url = f"https://horizon.stellar.org/accounts/{self.Address.text()}"
             response = requests.get(url).json()
             balance_response = response["balances"][0]["balance"]
-            self.console(f"Balance: {balance_response} XLM")
+            if self.theme == "dark":
+                font_color = "orange"
+            else:
+                font_color = "black"
+            self.console(f"<html><font color={font_color}>Balance: {balance_response} XLM</html>")
 
         except Exception as e:
             e = getattr(e, "message", repr(e))
@@ -361,11 +365,11 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.app_config["THEME"] = "dark"
             with open(self.config_path, "w") as updated_config:
                 json.dump(self.config, updated_config, indent=2, sort_keys=False, ensure_ascii=True)
-            self.statusbar.showMessage("Settings saved")
+            self.statusbar.showMessage("Settings saved", msecs=3000)
 
         except Exception as e:
             e = getattr(e, "message", repr(e))
-            self.statusbar.showMessage("Unable to save settings")
+            self.statusbar.showMessage("Unable to save settings", msecs=3000)
             self.console(e, error=True, log=True)
 
     def console(self, info, error=False, log=False):

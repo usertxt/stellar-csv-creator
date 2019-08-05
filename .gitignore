@@ -1,9 +1,11 @@
 # My edits
-.idea/
 dev/
 *.log
 *.csv
 addresses.db
+
+#PyCharm
+.idea/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
