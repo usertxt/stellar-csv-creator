@@ -15,7 +15,7 @@ logging.basicConfig(filename="stellar-csv-creator.log", format=f"%(asctime)s:%(l
 class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(CSVCreator, self).__init__(parent)
-        self.version = "0.2.0"
+        self.version = "0.2.1"
         sys.excepthook = self.error_handler
 
         self.app = QtWidgets.QApplication([])
