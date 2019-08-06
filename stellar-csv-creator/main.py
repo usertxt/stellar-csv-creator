@@ -39,7 +39,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         icon.addPixmap(QtGui.QPixmap("gui/icons/stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.setWindowIcon(icon)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("gui/icons/clear-text.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap("gui/icons/clear-text.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.clearButton.setIcon(icon1)
         self.ABclearButton.setIcon(icon1)
 
@@ -236,13 +236,13 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         msgBox.setWindowIcon(msgBox_icon)
         msgBox.setTextFormat(QtCore.Qt.RichText)
         if warning:
-            msgBox.setWindowTitle("WARNING")
+            msgBox.setWindowTitle("Warning")
             msgBox.setIcon(msgBox.Warning)
         if info:
-            msgBox.setWindowTitle("NOTICE")
+            msgBox.setWindowTitle("Notice")
             msgBox.setIcon(msgBox.Information)
         if critical:
-            msgBox.setWindowTitle("ERROR")
+            msgBox.setWindowTitle("Error")
             msgBox.setIcon(msgBox.Critical)
         msgBox.setText(text)
         msgBox.addButton(QtWidgets.QPushButton('OK'), QtWidgets.QMessageBox.YesRole)
