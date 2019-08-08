@@ -7,6 +7,7 @@ import csv
 import json
 import requests
 import sys
+import os
 
 logging.basicConfig(filename="stellar-csv-creator.log", format=f"%(asctime)s:%(levelname)s:%(message)s",
                     datefmt="%Y-%m-%dT%H:%M:%SZ", level=logging.INFO)
@@ -130,7 +131,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         palette.setColor(QtGui.QPalette.Button, QtGui.QColor(90, 90, 90))
         palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
         palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.white)
-        palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(17, 31, 54).lighter())
+        palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(17, 31, 54))
         palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.white)
         palette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
         palette.setColor(QtGui.QPalette.Link, QtCore.Qt.yellow)
@@ -143,6 +144,10 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.radioButtonDarkMode.setStyleSheet("QRadioButton:disabled {color: #a1a1a1}")
         self.radioButtonLightMode.setStyleSheet("QRadioButton:disabled {color: #a1a1a1}")
         self.addAddress.setStyleSheet("QPushButton:disabled {color: #a1a1a1}")
+        self.app.setStyleSheet("QMenu::item:disabled {"
+                               "color: #a1a1a1;"
+                               "border: none}"
+                               "QMenu::item:selected {background: rgb(17, 31, 54)}")
 
     def get_config(self):
         rb_light = self.radioButtonLightMode
@@ -229,6 +234,10 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             self.ABclearButton.show()
 
+    def restart_program(self):
+        python = sys.executable
+        os.execl(python, python, *sys.argv)
+
     def message_box(self, text, warning=False, info=False, critical=False):
         msgBox = QtWidgets.QMessageBox()
         msgBox_icon = QtGui.QIcon()
@@ -247,6 +256,23 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         msgBox.setText(text)
         msgBox.addButton(QtWidgets.QPushButton('OK'), QtWidgets.QMessageBox.YesRole)
         msgBox.exec_()
+
+    def theme_change_msgbox(self):
+        msgBox = QtWidgets.QMessageBox()
+        msgBox_icon = QtGui.QIcon()
+        msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        msgBox.setWindowIcon(msgBox_icon)
+        msgBox.setTextFormat(QtCore.Qt.RichText)
+        msgBox.setWindowTitle("Notice")
+        msgBox.setIcon(msgBox.Information)
+        msgBox.setText("App restart required to change theme")
+        restart = msgBox.addButton("Restart", QtWidgets.QMessageBox.YesRole)
+        cancel = msgBox.addButton("Cancel", QtWidgets.QMessageBox.RejectRole)
+        msgBox.exec_()
+        if msgBox.clickedButton() is restart:
+            self.restart_program()
+        elif msgBox.clickedButton() is cancel:
+            self.message_box("The theme will be changed the next time you run the app", info=True)
 
     def about_dialog(self):
         Dialog = QtWidgets.QDialog(None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
@@ -350,11 +376,6 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def save_settings(self):
         try:
-            if self.radioButtonLightMode.isChecked() and self.theme == "dark":
-                self.message_box("Restart required to change theme", info=True)
-            elif self.radioButtonDarkMode.isChecked() and self.theme == "default":
-                self.message_box("Restart required to change theme", info=True)
-
             self.csv_config["MIN_THRESH"] = self.MinThresh.text()
             self.csv_config["MAX_THRESH"] = self.MaxThresh.text()
             self.csv_config["SOURCE"] = self.Source.text()
@@ -366,6 +387,11 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             with open(self.config_path, "w") as updated_config:
                 json.dump(self.config, updated_config, indent=2, sort_keys=False, ensure_ascii=True)
             self.statusbar.showMessage("Settings saved", msecs=3000)
+
+            if self.radioButtonLightMode.isChecked() and self.theme == "dark":
+                self.theme_change_msgbox()
+            elif self.radioButtonDarkMode.isChecked() and self.theme == "default":
+                self.theme_change_msgbox()
 
         except Exception as e:
             e = getattr(e, "message", repr(e))
