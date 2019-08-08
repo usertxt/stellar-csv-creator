@@ -2,12 +2,12 @@ from PyQt5 import QtGui, QtCore, QtWidgets, QtSql
 from gui.main_window import Ui_MainWindow
 from gui.about import Ui_Dialog
 from datetime import datetime
+from utils.message_box import MessageBox
 import logging
 import csv
 import json
 import requests
 import sys
-import os
 
 logging.basicConfig(filename="stellar-csv-creator.log", format=f"%(asctime)s:%(levelname)s:%(message)s",
                     datefmt="%Y-%m-%dT%H:%M:%SZ", level=logging.INFO)
@@ -48,10 +48,10 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
         self.db.setDatabaseName('addresses.db')
         if not self.db.open():
-            self.message_box("Unable to establish a database connection.\n"
-                             "This example needs SQLite support. Please read "
-                             "the Qt SQL driver documentation for information "
-                             "how to build it.\n\n", critical=True)
+            self.mb.message_box("Unable to establish a database connection.\n"
+                                "This example needs SQLite support. Please read "
+                                "the Qt SQL driver documentation for information "
+                                "how to build it.\n\n", critical=True)
 
         self.query = QtSql.QSqlQuery()
         self.query.exec_("""CREATE TABLE IF NOT EXISTS addresses (id integer primary key autoincrement,
@@ -85,6 +85,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.clearButton.hide()
         self.ABclearButton.hide()
         self.make_links()
+        self.mb = MessageBox()
 
     def load_addresses(self):
         self.model.select()
@@ -144,7 +145,9 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.radioButtonDarkMode.setStyleSheet("QRadioButton:disabled {color: #a1a1a1}")
         self.radioButtonLightMode.setStyleSheet("QRadioButton:disabled {color: #a1a1a1}")
         self.addAddress.setStyleSheet("QPushButton:disabled {color: #a1a1a1}")
-        self.app.setStyleSheet("QMenu::item:disabled {"
+        self.app.setStyleSheet("QMenu {margin:5px}"
+                               "QMenu::item {padding: 2px 20px 2px 20px}"
+                               "QMenu::item:disabled {"
                                "color: #a1a1a1;"
                                "border: none}"
                                "QMenu::item:selected {background: rgb(17, 31, 54)}")
@@ -234,46 +237,6 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             self.ABclearButton.show()
 
-    def restart_program(self):
-        python = sys.executable
-        os.execl(python, python, *sys.argv)
-
-    def message_box(self, text, warning=False, info=False, critical=False):
-        msgBox = QtWidgets.QMessageBox()
-        msgBox_icon = QtGui.QIcon()
-        msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-        msgBox.setWindowIcon(msgBox_icon)
-        msgBox.setTextFormat(QtCore.Qt.RichText)
-        if warning:
-            msgBox.setWindowTitle("Warning")
-            msgBox.setIcon(msgBox.Warning)
-        if info:
-            msgBox.setWindowTitle("Notice")
-            msgBox.setIcon(msgBox.Information)
-        if critical:
-            msgBox.setWindowTitle("Error")
-            msgBox.setIcon(msgBox.Critical)
-        msgBox.setText(text)
-        msgBox.addButton(QtWidgets.QPushButton('OK'), QtWidgets.QMessageBox.YesRole)
-        msgBox.exec_()
-
-    def theme_change_msgbox(self):
-        msgBox = QtWidgets.QMessageBox()
-        msgBox_icon = QtGui.QIcon()
-        msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-        msgBox.setWindowIcon(msgBox_icon)
-        msgBox.setTextFormat(QtCore.Qt.RichText)
-        msgBox.setWindowTitle("Notice")
-        msgBox.setIcon(msgBox.Information)
-        msgBox.setText("App restart required to change theme")
-        restart = msgBox.addButton("Restart", QtWidgets.QMessageBox.YesRole)
-        cancel = msgBox.addButton("Cancel", QtWidgets.QMessageBox.RejectRole)
-        msgBox.exec_()
-        if msgBox.clickedButton() is restart:
-            self.restart_program()
-        elif msgBox.clickedButton() is cancel:
-            self.message_box("The theme will be changed the next time you run the app", info=True)
-
     def about_dialog(self):
         Dialog = QtWidgets.QDialog(None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
                                    QtCore.Qt.WindowCloseButtonHint)
@@ -287,10 +250,10 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         response = requests.get("https://api.github.com/repos/usertxt/stellar-csv-creator/releases").json()
         new_version = response[0]["tag_name"].replace("v", "")
         if new_version > self.version:
-            self.message_box("<a href=\"https://github.com/usertxt/stellar-csv-creator/releases/latest\">"
-                             f"Version {new_version} is available</a>", info=True)
+            self.mb.message_box("<a href=\"https://github.com/usertxt/stellar-csv-creator/releases/latest\">"
+                                f"Version {new_version} is available</a>", info=True)
         else:
-            self.message_box("You are using the latest release", info=True)
+            self.mb.message_box("You are using the latest release", info=True)
 
     def create_csv(self):
         if not self.Address.text() or not self.StartDate.text():
@@ -389,9 +352,9 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             self.statusbar.showMessage("Settings saved", msecs=3000)
 
             if self.radioButtonLightMode.isChecked() and self.theme == "dark":
-                self.theme_change_msgbox()
+                self.mb.theme_change_msgbox()
             elif self.radioButtonDarkMode.isChecked() and self.theme == "default":
-                self.theme_change_msgbox()
+                self.mb.theme_change_msgbox()
 
         except Exception as e:
             e = getattr(e, "message", repr(e))
