@@ -3,8 +3,9 @@ dev/
 *.log
 *.csv
 addresses.db
+update_cache*
 
-#PyCharm
+# PyCharm
 .idea/
 
 # Byte-compiled / optimized / DLL files
