@@ -7,10 +7,12 @@ import logging
 import csv
 import json
 import requests
+import requests_cache
 import sys
 
 logging.basicConfig(filename="stellar-csv-creator.log", format=f"%(asctime)s:%(levelname)s:%(message)s",
                     datefmt="%Y-%m-%dT%H:%M:%SZ", level=logging.INFO)
+requests_cache.install_cache(cache_name='update_cache', expire_after=3600)
 
 
 class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -247,7 +249,8 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         Dialog.exec_()
 
     def check_for_updates(self):
-        response = requests.get("https://api.github.com/repos/usertxt/stellar-csv-creator/releases").json()
+        response = requests.get("https://api.github.com/repos/usertxt/stellar-csv-creator/releases")
+        response = response.json()
         new_version = response[0]["tag_name"].replace("v", "")
         if new_version > self.version:
             self.mb.message_box("<a href=\"https://github.com/usertxt/stellar-csv-creator/releases/latest\">"
