@@ -12,7 +12,6 @@ import sys
 
 logging.basicConfig(filename="stellar-csv-creator.log", format=f"%(asctime)s:%(levelname)s:%(message)s",
                     datefmt="%Y-%m-%dT%H:%M:%SZ", level=logging.INFO)
-requests_cache.install_cache(cache_name='update_cache', expire_after=3600)
 
 
 class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -249,14 +248,16 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         Dialog.exec_()
 
     def check_for_updates(self):
-        response = requests.get("https://api.github.com/repos/usertxt/stellar-csv-creator/releases")
-        response = response.json()
-        new_version = response[0]["tag_name"].replace("v", "")
-        if new_version > self.version:
-            self.mb.message_box("<a href=\"https://github.com/usertxt/stellar-csv-creator/releases/latest\">"
-                                f"Version {new_version} is available</a>", info=True)
-        else:
-            self.mb.message_box("You are using the latest release", info=True)
+        response = requests_cache.CachedSession(cache_name='update_cache', expire_after=3600)
+        with response:
+            response = response.get("https://api.github.com/repos/usertxt/stellar-csv-creator/releases")
+            response = response.json()
+            new_version = response[0]["tag_name"].replace("v", "")
+            if new_version > self.version:
+                self.mb.message_box("<a href=\"https://github.com/usertxt/stellar-csv-creator/releases/latest\">"
+                                    f"Version {new_version} is available</a>", info=True)
+            else:
+                self.mb.message_box("You are using the latest release", info=True)
 
     def create_csv(self):
         if not self.Address.text() or not self.StartDate.text():
