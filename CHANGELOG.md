@@ -14,7 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.0] - 2019-08-05
 ### Added
 - Address Book, allowing users to save addresses with optional nicknames to use in the main program
+- Dark theme
 - Update check
+- Clear text button to address field
+- Settings reset button
 
 ## [0.1.0] - 2019-07-29
 ### Added
