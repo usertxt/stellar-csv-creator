@@ -9,6 +9,10 @@ class MessageBox:
         self.config_path = "config.json"
         self.config = json.load(open(self.config_path))
         self.theme = self.config["APP"]["THEME"]
+        if self.theme == "dark":
+            self.icon_file = "gui/icons/stellar_black_bg.ico"
+        else:
+            self.icon_file = "gui/icons/stellar_white_bg.ico"
 
     def restart_program(self):
         python = sys.executable
@@ -17,10 +21,7 @@ class MessageBox:
     def message_box(self, text, warning=False, info=False, critical=False):
         msgBox = QtWidgets.QMessageBox()
         msgBox_icon = QtGui.QIcon()
-        if self.theme == "dark":
-            msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar_black_bg.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-        else:
-            msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar_white_bg.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        msgBox_icon.addPixmap(QtGui.QPixmap(self.icon_file), QtGui.QIcon.Normal, QtGui.QIcon.On)
         msgBox.setWindowIcon(msgBox_icon)
         msgBox.setTextFormat(QtCore.Qt.RichText)
         if warning:
@@ -39,10 +40,7 @@ class MessageBox:
     def theme_change_msgbox(self):
         msgBox = QtWidgets.QMessageBox()
         msgBox_icon = QtGui.QIcon()
-        if self.theme == "dark":
-            msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar_black_bg.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-        else:
-            msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar_white_bg.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        msgBox_icon.addPixmap(QtGui.QPixmap(self.icon_file), QtGui.QIcon.Normal, QtGui.QIcon.On)
         msgBox.setWindowIcon(msgBox_icon)
         msgBox.setTextFormat(QtCore.Qt.RichText)
         msgBox.setWindowTitle("Notice")
