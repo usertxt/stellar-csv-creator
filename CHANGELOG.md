@@ -4,15 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v0.2.1] - 2019-08-06
+## [Unreleased]
+
+## [0.2.1] - 2019-08-06
 ### Fixed
 - Address book spacing
 - Stellar logo icon sizing
 
-## [v0.2.0] - 2019-08-05
+## [0.2.0] - 2019-08-05
 ### Added
-- Address Book, allowing users to save addresses with optional nicknames to use them in the main program
+- Address Book, allowing users to save addresses with optional nicknames to use in the main program
+- Update check
 
-## [v0.1.0] - 2019-07-29
+## [0.1.0] - 2019-07-29
 ### Added
 - First beta release
+
+[Unreleased]: https://github.com/usertxt/stellar-csv-creator/compare/v0.2.1...dev
+[0.2.1]: https://github.com/usertxt/stellar-csv-creator/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/usertxt/stellar-csv-creator/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/usertxt/stellar-csv-creator/releases/tag/v0.1.0
