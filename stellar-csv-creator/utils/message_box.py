@@ -1,9 +1,15 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 import sys
+import json
 import os
 
 
 class MessageBox:
+    def __init__(self):
+        self.config_path = "config.json"
+        self.config = json.load(open(self.config_path))
+        self.theme = self.config["APP"]["THEME"]
+
     def restart_program(self):
         python = sys.executable
         os.execl(python, python, *sys.argv)
@@ -11,7 +17,10 @@ class MessageBox:
     def message_box(self, text, warning=False, info=False, critical=False):
         msgBox = QtWidgets.QMessageBox()
         msgBox_icon = QtGui.QIcon()
-        msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        if self.theme == "dark":
+            msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar_black_bg.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        else:
+            msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar_white_bg.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         msgBox.setWindowIcon(msgBox_icon)
         msgBox.setTextFormat(QtCore.Qt.RichText)
         if warning:
@@ -30,7 +39,10 @@ class MessageBox:
     def theme_change_msgbox(self):
         msgBox = QtWidgets.QMessageBox()
         msgBox_icon = QtGui.QIcon()
-        msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        if self.theme == "dark":
+            msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar_black_bg.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        else:
+            msgBox_icon.addPixmap(QtGui.QPixmap("gui/icons/stellar_white_bg.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         msgBox.setWindowIcon(msgBox_icon)
         msgBox.setTextFormat(QtCore.Qt.RichText)
         msgBox.setWindowTitle("Notice")

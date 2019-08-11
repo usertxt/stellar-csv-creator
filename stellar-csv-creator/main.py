@@ -33,12 +33,14 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         # Configure GUI
         self.setWindowTitle(f"Stellar CSV Creator v{self.version}")
         self.app.setStyle('Fusion')
+        icon = QtGui.QIcon()
         if self.theme == "dark":
             self.dark_theme()
+            icon.addPixmap(QtGui.QPixmap("gui/icons/stellar_black_bg.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        else:
+            icon.addPixmap(QtGui.QPixmap("gui/icons/stellar_white_bg.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
 
         # Set icons
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("gui/icons/stellar.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.setWindowIcon(icon)
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap("gui/icons/clear-text.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
@@ -243,6 +245,12 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                                    QtCore.Qt.WindowCloseButtonHint)
         about = Ui_Dialog()
         about.setupUi(Dialog)
+        icon = QtGui.QIcon()
+        if self.theme == "dark":
+            icon.addPixmap(QtGui.QPixmap("gui/icons/stellar_black_bg.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        else:
+            icon.addPixmap(QtGui.QPixmap("gui/icons/stellar_white_bg.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        Dialog.setWindowIcon(icon)
         about.labelVersion.setText(f"<html><head/><body><p>Stellar CSV Creator v{self.version}</p></body></html>")
         Dialog.show()
         Dialog.exec_()
