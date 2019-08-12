@@ -10,9 +10,9 @@ class MessageBox:
         self.config = json.load(open(self.config_path))
         self.theme = self.config["APP"]["THEME"]
         if self.theme == "dark":
-            self.icon_file = "gui/icons/stellar_black_bg.ico"
+            self.icon_file = "gui/icons/stellar_dark.ico"
         else:
-            self.icon_file = "gui/icons/stellar_white_bg.ico"
+            self.icon_file = "gui/icons/stellar_default.ico"
 
     def restart_program(self):
         python = sys.executable

@@ -36,9 +36,9 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.icon = QtGui.QIcon()
         if self.theme == "dark":
             self.dark_theme()
-            self.icon_file = "gui/icons/stellar_black_bg.ico"
+            self.icon_file = "gui/icons/stellar_dark.ico"
         else:
-            self.icon_file = "gui/icons/stellar_white_bg.ico"
+            self.icon_file = "gui/icons/stellar_default.ico"
 
         # Set icons
         self.icon.addPixmap(QtGui.QPixmap(self.icon_file), QtGui.QIcon.Normal, QtGui.QIcon.On)
