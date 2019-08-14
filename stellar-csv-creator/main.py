@@ -252,9 +252,9 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         Dialog.exec_()
 
     def check_for_updates(self):
-        response = requests_cache.CachedSession(cache_name='update_cache', expire_after=3600)
-        with response:
-            response = response.get("https://api.github.com/repos/usertxt/stellar-csv-creator/releases")
+        session = requests_cache.CachedSession(cache_name="update_cache", expire_after=3600, extension=".db")
+        with session:
+            response = session.get("https://api.github.com/repos/usertxt/stellar-csv-creator/releases")
             response = response.json()
             new_version = response[0]["tag_name"].replace("v", "")
             if new_version > self.version:
