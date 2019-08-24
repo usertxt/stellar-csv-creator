@@ -33,20 +33,20 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         # Configure GUI
         self.setWindowTitle(f"Stellar CSV Creator v{self.version}")
         self.app.setStyle('Fusion')
-        self.icon = QtGui.QIcon()
+        self.window_icon = QtGui.QIcon()
         if self.theme == "dark":
             self.dark_theme()
-            self.icon_file = "gui/icons/stellar_dark.ico"
+            self.window_icon_file = "gui/icons/stellar_dark.ico"
         else:
-            self.icon_file = "gui/icons/stellar_default.ico"
+            self.window_icon_file = "gui/icons/stellar_default.ico"
 
         # Set icons
-        self.icon.addPixmap(QtGui.QPixmap(self.icon_file), QtGui.QIcon.Normal, QtGui.QIcon.On)
-        self.setWindowIcon(self.icon)
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("gui/icons/clear-text.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-        self.clearButton.setIcon(icon1)
-        self.ABclearButton.setIcon(icon1)
+        self.window_icon.addPixmap(QtGui.QPixmap(self.window_icon_file), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        self.setWindowIcon(self.window_icon)
+        clear_text_icon = QtGui.QIcon()
+        clear_text_icon.addPixmap(QtGui.QPixmap("gui/icons/clear-text.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        self.clearButton.setIcon(clear_text_icon)
+        self.ABclearButton.setIcon(clear_text_icon)
 
         # Create address book DB
         self.db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
@@ -246,7 +246,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                                    QtCore.Qt.WindowCloseButtonHint)
         about = Ui_Dialog()
         about.setupUi(Dialog)
-        Dialog.setWindowIcon(self.icon)
+        Dialog.setWindowIcon(self.window_icon)
         about.labelVersion.setText(f"<html><head/><body><p>Stellar CSV Creator v{self.version}</p></body></html>")
         Dialog.show()
         Dialog.exec_()
