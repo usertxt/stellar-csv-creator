@@ -43,10 +43,6 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         # Set icons
         self.window_icon.addPixmap(QtGui.QPixmap(self.window_icon_file), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.setWindowIcon(self.window_icon)
-        clear_text_icon = QtGui.QIcon()
-        clear_text_icon.addPixmap(QtGui.QPixmap("gui/icons/clear-text.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-        self.clearButton.setIcon(clear_text_icon)
-        self.ABclearButton.setIcon(clear_text_icon)
 
         # Create address book DB
         self.db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
@@ -86,8 +82,6 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Backend functions
         self.get_config()
-        self.clearButton.hide()
-        self.ABclearButton.hide()
         self.make_links()
         self.mb = MessageBox()
 
@@ -193,12 +187,10 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Address.returnPressed.connect(self.CreateCSV.click)
         self.Address.textChanged['QString'].connect(self.enable_buttons)
         self.StartDate.textChanged.connect(self.enable_buttons)
-        self.clearButton.clicked.connect(self.clear_button)
         # Addresses tab
         self.ABAddress.returnPressed.connect(self.addAddress.click)
         self.ABAddress.textChanged.connect(self.enable_buttons)
         self.ABAddress.textChanged['QString'].connect(self.enable_buttons)
-        self.ABclearButton.clicked.connect(self.clear_button_ab)
         self.addAddress.clicked.connect(self.add_address)
         self.useAction.triggered.connect(self.use_address)
         self.editAction.triggered.connect(self.edit_address)
@@ -206,14 +198,6 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         # Settings tab
         self.SaveSettings.clicked.connect(self.save_settings)
         self.resetButton.clicked.connect(self.get_config)
-
-    def clear_button(self):
-        self.Address.clear()
-        self.clearButton.hide()
-
-    def clear_button_ab(self):
-        self.ABAddress.clear()
-        self.ABclearButton.hide()
 
     def enable_buttons(self):
         if self.Address.text():
@@ -230,16 +214,6 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             self.addAddress.setEnabled(True)
         else:
             self.addAddress.setEnabled(False)
-
-        if self.Address.text() == "" and self.Address.textChanged['QString']:
-            self.clearButton.hide()
-        else:
-            self.clearButton.show()
-
-        if self.ABAddress.text() == "" and self.ABAddress.textChanged['QString']:
-            self.ABclearButton.hide()
-        else:
-            self.ABclearButton.show()
 
     def about_dialog(self):
         Dialog = QtWidgets.QDialog(None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
