@@ -56,9 +56,11 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                                 "how to build it.\n\n", critical=True)
 
         self.query = QtSql.QSqlQuery()
-        self.query.exec_("""CREATE TABLE IF NOT EXISTS addresses (id integer primary key autoincrement,
-                                                         Nickname VARCHAR(20),
-                                                        Address VARCHAR(20))""")
+        self.query.exec_("""
+                         CREATE TABLE IF NOT EXISTS addresses (id integer primary key autoincrement,
+                         Nickname VARCHAR(20),
+                         Address VARCHAR(20))
+                         """)
 
         # Load address book table
         self.view = self.tableAddresses
