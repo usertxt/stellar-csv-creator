@@ -1,14 +1,16 @@
-from PyQt5 import QtGui, QtCore, QtWidgets, QtSql
-from gui.main_window import Ui_MainWindow
-from gui.about import Ui_Dialog
-from datetime import datetime
-from utils.message_box import MessageBox
-import logging
 import csv
 import json
+import logging
+import sys
+from datetime import datetime
+
 import requests
 import requests_cache
-import sys
+from PyQt5 import QtGui, QtCore, QtWidgets, QtSql
+
+from gui.about import Ui_Dialog
+from gui.main_window import Ui_MainWindow
+from utils.message_box import MessageBox
 
 logging.basicConfig(filename="stellar-csv-creator.log", format=f"%(asctime)s:%(levelname)s:%(message)s",
                     datefmt="%Y-%m-%dT%H:%M:%SZ", level=logging.INFO)
