@@ -34,7 +34,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Configure GUI
         self.setWindowTitle(f"Stellar CSV Creator v{self.version}")
-        self.app.setStyle('Fusion')
+        self.app.setStyle("Fusion")
         self.window_icon = QtGui.QIcon()
         if self.theme == "dark":
             self.dark_theme()
@@ -47,7 +47,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setWindowIcon(self.window_icon)
 
         # Create address book DB
-        self.db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
+        self.db = QtSql.QSqlDatabase.addDatabase("QSQLITE")
         self.db.setDatabaseName('addresses.db')
         if not self.db.open():
             self.mb.message_box("Unable to establish a database connection.\n"
