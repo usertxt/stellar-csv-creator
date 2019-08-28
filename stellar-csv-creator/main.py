@@ -241,30 +241,34 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             else:
                 self.mb.message_box("You are using the latest release", info=True)
 
+    def date_format(self, text, str_object=False, date_object=False):
+        if str_object:
+            text = datetime.strftime(text, "%Y-%m-%d")
+        if date_object:
+            text = datetime.strptime(text, "%Y-%m-%d")
+        return text
+
     def create_csv(self):
-        if not self.Address.text() or not self.StartDate.text():
-            return self.console("Enter your address and your start date!", error=True)
-        else:
-            pass
         url = f"https://horizon.stellar.org/accounts/{self.Address.text()}/effects?cursor=&limit=100&order=desc"
         main_response = requests.get(url).json()
         main_response = main_response["_embedded"]["records"]
 
-        start_date = datetime.strptime(self.StartDate.text(), "%Y-%m-%d")
-        end_date = datetime.utcnow()
-        start_date_console = datetime.strftime(start_date, "%Y-%m-%d")
-        end_date_console = datetime.strftime(end_date, "%Y-%m-%d")
+        start_date = self.date_format(self.StartDate.text(), date_object=True)
+        if self.EndDate.text():
+            end_date = self.date_format(self.EndDate.text(), date_object=True)
+        else:
+            end_date = datetime.utcnow()
+        start_date_console = self.date_format(start_date, str_object=True)
+        end_date_console = self.date_format(end_date, str_object=True)
 
-        top_row = ("Date", "Action", "Volume", "Symbol", "Source", "Memo")
+        threshold_min = float(self.csv_config["MIN_THRESH"])
+        threshold_max = float(self.csv_config["MAX_THRESH"])
 
         try:
+            top_row = ("Date", "Action", "Volume", "Symbol", "Source", "Memo")
             with open(f"{self.Address.text()}.csv", "w", newline="") as file:
                 writer = csv.writer(file)
                 writer.writerow(top_row)
-
-            if self.EndDate.text():
-                end_date = datetime.strptime(self.EndDate.text(), "%Y-%m-%d")
-                end_date_console = datetime.strftime(end_date, "%Y-%m-%d")
 
             self.console(f"Creating CSV with transactions from {start_date_console} to {end_date_console}", log=True)
             logging.info(top_row)
@@ -273,42 +277,34 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                 created_at = tx["created_at"]
                 amount = tx["amount"]
 
-                threshold_min = float(self.csv_config["MIN_THRESH"])
-                threshold_max = float(self.csv_config["MAX_THRESH"])
-
                 dates = datetime.strptime(created_at, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d")
-                dates_formatted = datetime.strptime(dates, "%Y-%m-%d")
+                dates_formatted = self.date_format(dates, date_object=True)
 
                 if float(amount) > threshold_max or float(amount) < threshold_min:
                     pass
-                else:
-                    if start_date <= dates_formatted <= end_date:
-                        action = "INCOME"
-                        symbol = "XLM"
-                        source = self.csv_config["SOURCE"]
-                        memo = self.csv_config["MEMO"]
-                        rows = (created_at, action, amount, symbol, source, memo)
-                        logging.info(rows)
-                        self.output.append(str(rows))
-                        with open(f"{self.Address.text()}.csv", "a", newline="") as file:
-                            writer = csv.writer(file)
-                            writer.writerow(rows)
+                elif start_date <= dates_formatted <= end_date:
+                    action = "INCOME"
+                    symbol = "XLM"
+                    source = self.csv_config["SOURCE"]
+                    memo = self.csv_config["MEMO"]
+                    rows = (created_at, action, amount, symbol, source, memo)
+                    logging.info(rows)
+                    self.output.append(str(rows))
+                    with open(f"{self.Address.text()}.csv", "a", newline="") as file:
+                        writer = csv.writer(file)
+                        writer.writerow(rows)
                 self.statusbar.showMessage("CSV created", msecs=3000)
 
         except Exception as e:
             e = str(e)
             if e == "'amount'":
-                e = e.replace("'amount'", "==End of transactions from selected date range==")
+                e = e.replace("'amount'", f"End of transactions from {start_date_console} to {end_date_console}")
                 self.console(e, log=True)
             else:
                 self.console(e, error=True, log=True)
 
     def get_balance(self):
         try:
-            if not self.Address.text():
-                return self.console("Enter your address into the address field!", error=True)
-            else:
-                pass
             url = f"https://horizon.stellar.org/accounts/{self.Address.text()}"
             response = requests.get(url).json()
             balance_response = response["balances"][0]["balance"]
