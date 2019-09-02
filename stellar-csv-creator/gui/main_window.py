@@ -1,5 +1,4 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PySide2 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -268,12 +267,14 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        MainWindow.setTabOrder(self.tabWidget, self.Address)
         MainWindow.setTabOrder(self.Address, self.StartDate)
         MainWindow.setTabOrder(self.StartDate, self.EndDate)
         MainWindow.setTabOrder(self.EndDate, self.CreateCSV)
         MainWindow.setTabOrder(self.CreateCSV, self.GetBalance)
         MainWindow.setTabOrder(self.GetBalance, self.output)
-        MainWindow.setTabOrder(self.output, self.ABNickname)
+        MainWindow.setTabOrder(self.output, self.ABAddress)
+        MainWindow.setTabOrder(self.ABAddress, self.ABNickname)
         MainWindow.setTabOrder(self.ABNickname, self.addAddress)
         MainWindow.setTabOrder(self.addAddress, self.tableAddresses)
         MainWindow.setTabOrder(self.tableAddresses, self.Source)
@@ -286,20 +287,19 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.SaveSettings, self.resetButton)
 
     def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        self.labelAddress.setText(_translate("MainWindow", "Stellar Address"))
-        self.Address.setToolTip(_translate("MainWindow", "Stellar Address (required): A Stellar address to receive transactions from"))
-        self.labelStartDate.setText(_translate("MainWindow", "Start Date"))
-        self.StartDate.setToolTip(_translate("MainWindow", "Start Date (required): The date of the oldest transaction received"))
-        self.StartDate.setPlaceholderText(_translate("MainWindow", "YYYY-MM-DD"))
-        self.labelEndDate.setText(_translate("MainWindow", "End Date"))
-        self.EndDate.setToolTip(_translate("MainWindow", "End Date (optional): Create a range of transactions received with a specific end date"))
-        self.EndDate.setPlaceholderText(_translate("MainWindow", "YYYY-MM-DD"))
-        self.CreateCSV.setToolTip(_translate("MainWindow", "Create CSV file with chosen parameters"))
-        self.CreateCSV.setText(_translate("MainWindow", "Create CSV"))
-        self.GetBalance.setToolTip(_translate("MainWindow", "Print the balance"))
-        self.GetBalance.setText(_translate("MainWindow", "Get Balance"))
-        self.output.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        self.labelAddress.setText(QtWidgets.QApplication.translate("MainWindow", "Stellar Address", None, -1))
+        self.Address.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Stellar Address (required): A Stellar address to receive transactions from", None, -1))
+        self.labelStartDate.setText(QtWidgets.QApplication.translate("MainWindow", "Start Date", None, -1))
+        self.StartDate.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Start Date (required): The date of the oldest transaction received", None, -1))
+        self.StartDate.setPlaceholderText(QtWidgets.QApplication.translate("MainWindow", "YYYY-MM-DD", None, -1))
+        self.labelEndDate.setText(QtWidgets.QApplication.translate("MainWindow", "End Date", None, -1))
+        self.EndDate.setToolTip(QtWidgets.QApplication.translate("MainWindow", "End Date (optional): Create a range of transactions received with a specific end date", None, -1))
+        self.EndDate.setPlaceholderText(QtWidgets.QApplication.translate("MainWindow", "YYYY-MM-DD", None, -1))
+        self.CreateCSV.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Create CSV file with chosen parameters", None, -1))
+        self.CreateCSV.setText(QtWidgets.QApplication.translate("MainWindow", "Create CSV", None, -1))
+        self.GetBalance.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Print the balance", None, -1))
+        self.GetBalance.setText(QtWidgets.QApplication.translate("MainWindow", "Get Balance", None, -1))
+        self.output.setHtml(QtWidgets.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
@@ -308,29 +308,30 @@ class Ui_MainWindow(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Start Date</span> (required): The date of the oldest transaction received</p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">End Date</span> (optional): Create a range of transactions received with a specific end date</p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">______________________________________________________________________</p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Main"))
-        self.labelABAddress.setText(_translate("MainWindow", "Stellar Address"))
-        self.ABAddress.setToolTip(_translate("MainWindow", "Stellar address (required)"))
-        self.labelABNickname.setText(_translate("MainWindow", "Nickname (optional)"))
-        self.ABNickname.setToolTip(_translate("MainWindow", "Nickname (optional)"))
-        self.addAddress.setToolTip(_translate("MainWindow", "Add to address book"))
-        self.addAddress.setText(_translate("MainWindow", "Add"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Address Book"))
-        self.labelSource.setText(_translate("MainWindow", "Source"))
-        self.labelMemo.setText(_translate("MainWindow", "Memo"))
-        self.labelMinThresh.setText(_translate("MainWindow", "Minimum Threshold"))
-        self.labelMaxThresh.setText(_translate("MainWindow", "Maximum Threshold"))
-        self.labelTheme.setText(_translate("MainWindow", "Theme"))
-        self.radioButtonLightMode.setText(_translate("MainWindow", "Light"))
-        self.radioButtonDarkMode.setText(_translate("MainWindow", "Dark"))
-        self.SaveSettings.setToolTip(_translate("MainWindow", "Save chosen settings"))
-        self.SaveSettings.setText(_translate("MainWindow", "Save Settings"))
-        self.resetButton.setText(_translate("MainWindow", "Reset"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "Settings"))
-        self.menuFile.setTitle(_translate("MainWindow", "File"))
-        self.menuHelp.setTitle(_translate("MainWindow", "Help"))
-        self.actionExit.setText(_translate("MainWindow", "Exit"))
-        self.actionExit.setShortcut(_translate("MainWindow", "Ctrl+Q"))
-        self.actionAbout.setText(_translate("MainWindow", "About"))
-        self.actionCheck_for_updates.setText(_translate("MainWindow", "Check for updates"))
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None, -1))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtWidgets.QApplication.translate("MainWindow", "Main", None, -1))
+        self.labelABAddress.setText(QtWidgets.QApplication.translate("MainWindow", "Stellar Address", None, -1))
+        self.ABAddress.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Stellar address (required)", None, -1))
+        self.labelABNickname.setText(QtWidgets.QApplication.translate("MainWindow", "Nickname (optional)", None, -1))
+        self.ABNickname.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Nickname (optional)", None, -1))
+        self.addAddress.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Add to address book", None, -1))
+        self.addAddress.setText(QtWidgets.QApplication.translate("MainWindow", "Add", None, -1))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtWidgets.QApplication.translate("MainWindow", "Address Book", None, -1))
+        self.labelSource.setText(QtWidgets.QApplication.translate("MainWindow", "Source", None, -1))
+        self.labelMemo.setText(QtWidgets.QApplication.translate("MainWindow", "Memo", None, -1))
+        self.labelMinThresh.setText(QtWidgets.QApplication.translate("MainWindow", "Minimum Threshold", None, -1))
+        self.labelMaxThresh.setText(QtWidgets.QApplication.translate("MainWindow", "Maximum Threshold", None, -1))
+        self.labelTheme.setText(QtWidgets.QApplication.translate("MainWindow", "Theme", None, -1))
+        self.radioButtonLightMode.setText(QtWidgets.QApplication.translate("MainWindow", "Light", None, -1))
+        self.radioButtonDarkMode.setText(QtWidgets.QApplication.translate("MainWindow", "Dark", None, -1))
+        self.SaveSettings.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Save chosen settings", None, -1))
+        self.SaveSettings.setText(QtWidgets.QApplication.translate("MainWindow", "Save Settings", None, -1))
+        self.resetButton.setText(QtWidgets.QApplication.translate("MainWindow", "Reset", None, -1))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QtWidgets.QApplication.translate("MainWindow", "Settings", None, -1))
+        self.menuFile.setTitle(QtWidgets.QApplication.translate("MainWindow", "File", None, -1))
+        self.menuHelp.setTitle(QtWidgets.QApplication.translate("MainWindow", "Help", None, -1))
+        self.actionExit.setText(QtWidgets.QApplication.translate("MainWindow", "Exit", None, -1))
+        self.actionExit.setShortcut(QtWidgets.QApplication.translate("MainWindow", "Ctrl+Q", None, -1))
+        self.actionAbout.setText(QtWidgets.QApplication.translate("MainWindow", "About", None, -1))
+        self.actionCheck_for_updates.setText(QtWidgets.QApplication.translate("MainWindow", "Check for updates", None, -1))
+

@@ -1,12 +1,10 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PySide2 import QtCore, QtGui, QtWidgets
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(400, 200)
         font = QtGui.QFont()
-        font.setKerning(True)
         Dialog.setFont(font)
         Dialog.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
         self.closeButton = QtWidgets.QDialogButtonBox(Dialog)
@@ -25,26 +23,26 @@ class Ui_Dialog(object):
         self.labelAbout2.setObjectName("labelAbout2")
         self.labelSourceCodeLink = QtWidgets.QLabel(Dialog)
         self.labelSourceCodeLink.setGeometry(QtCore.QRect(10, 110, 381, 20))
+        self.labelSourceCodeLink.setText("")
         self.labelSourceCodeLink.setOpenExternalLinks(True)
         self.labelSourceCodeLink.setObjectName("labelSourceCodeLink")
         self.labelLicenseLink = QtWidgets.QLabel(Dialog)
         self.labelLicenseLink.setGeometry(QtCore.QRect(10, 130, 381, 20))
+        self.labelLicenseLink.setText("")
         self.labelLicenseLink.setOpenExternalLinks(True)
         self.labelLicenseLink.setObjectName("labelLicenseLink")
-        self.labelSourceCodeLink_2 = QtWidgets.QLabel(Dialog)
-        self.labelSourceCodeLink_2.setGeometry(QtCore.QRect(10, 90, 381, 20))
-        self.labelSourceCodeLink_2.setOpenExternalLinks(True)
-        self.labelSourceCodeLink_2.setObjectName("labelSourceCodeLink_2")
+        self.labelWebsiteLink = QtWidgets.QLabel(Dialog)
+        self.labelWebsiteLink.setGeometry(QtCore.QRect(10, 90, 381, 20))
+        self.labelWebsiteLink.setText("")
+        self.labelWebsiteLink.setOpenExternalLinks(True)
+        self.labelWebsiteLink.setObjectName("labelWebsiteLink")
 
         self.retranslateUi(Dialog)
-        self.closeButton.accepted.connect(Dialog.accept)
+        QtCore.QObject.connect(self.closeButton, QtCore.SIGNAL("accepted()"), Dialog.accept)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "About"))
-        self.labelAbout1.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:8.25pt;\">This program was written with Python and uses Qt for the front-end.</span></p></body></html>"))
-        self.labelAbout2.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:8.25pt;\">This program is completely free, open source, and comes with no warranty.</span></p></body></html>"))
-        self.labelSourceCodeLink.setText(_translate("Dialog", "<a href=\"https://github.com/usertxt/stellar-csv-creator\">Source Code</a>"))
-        self.labelLicenseLink.setText(_translate("Dialog", "<a href=\"https://github.com/usertxt/stellar-csv-creator/blob/master/LICENSE\">The MIT License</a>"))
-        self.labelSourceCodeLink_2.setText(_translate("Dialog", "<a href=\"http://usertxt.com/stellar-csv-creator\">usertxt.com/stellar-csv-creator</a>"))
+        Dialog.setWindowTitle(QtWidgets.QApplication.translate("Dialog", "About", None, -1))
+        self.labelAbout1.setText(QtWidgets.QApplication.translate("Dialog", "<html><head/><body><p><span style=\" font-size:8.25pt;\">This program was written with Python and uses PySide2 for the front-end.</span></p></body></html>", None, -1))
+        self.labelAbout2.setText(QtWidgets.QApplication.translate("Dialog", "<html><head/><body><p><span style=\" font-size:8.25pt;\">This program is completely free, open source, and comes with no warranty.</span></p></body></html>", None, -1))
+

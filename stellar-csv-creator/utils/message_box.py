@@ -1,14 +1,13 @@
-from PyQt5 import QtWidgets, QtGui, QtCore
-import sys
-import json
 import os
+import sys
+
+from PySide2 import QtWidgets, QtGui, QtCore
 
 
 class MessageBox:
-    def __init__(self):
-        self.config_path = "config.json"
-        self.config = json.load(open(self.config_path))
-        self.theme = self.config["APP"]["THEME"]
+    def __init__(self, theme):
+        self.theme = theme
+
         if self.theme == "dark":
             self.icon_file = "gui/icons/stellar_dark.ico"
         else:
@@ -20,6 +19,13 @@ class MessageBox:
 
     def message_box(self, text, warning=False, info=False, critical=False):
         msgBox = QtWidgets.QMessageBox()
+
+        if self.theme == "dark":
+            file = QtCore.QFile(":/qdarkstyle/style.qss")
+            file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
+            stream = QtCore.QTextStream(file)
+            msgBox.setStyleSheet(stream.readAll())
+
         msgBox_icon = QtGui.QIcon()
         msgBox_icon.addPixmap(QtGui.QPixmap(self.icon_file), QtGui.QIcon.Normal, QtGui.QIcon.On)
         msgBox.setWindowIcon(msgBox_icon)
@@ -34,11 +40,18 @@ class MessageBox:
             msgBox.setWindowTitle("Error")
             msgBox.setIcon(msgBox.Critical)
         msgBox.setText(text)
-        msgBox.addButton(QtWidgets.QPushButton('OK'), QtWidgets.QMessageBox.YesRole)
+        msgBox.addButton("OK", QtWidgets.QMessageBox.YesRole)
         msgBox.exec_()
 
     def theme_change_msgbox(self):
         msgBox = QtWidgets.QMessageBox()
+
+        if self.theme == "dark":
+            file = QtCore.QFile(":/qdarkstyle/style.qss")
+            file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
+            stream = QtCore.QTextStream(file)
+            msgBox.setStyleSheet(stream.readAll())
+
         msgBox_icon = QtGui.QIcon()
         msgBox_icon.addPixmap(QtGui.QPixmap(self.icon_file), QtGui.QIcon.Normal, QtGui.QIcon.On)
         msgBox.setWindowIcon(msgBox_icon)
@@ -52,4 +65,4 @@ class MessageBox:
         if msgBox.clickedButton() is restart:
             self.restart_program()
         elif msgBox.clickedButton() is cancel:
-            self.message_box("The theme will be changed the next time you run the app", info=True)
+            self.message_box(f"The theme will be changed on next run", info=True)

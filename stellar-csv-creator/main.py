@@ -6,11 +6,13 @@ from datetime import datetime
 
 import requests
 import requests_cache
-from PyQt5 import QtGui, QtCore, QtWidgets, QtSql
+from PySide2 import QtGui, QtCore, QtWidgets, QtSql
 
-from gui.about import Ui_Dialog
 from gui.main_window import Ui_MainWindow
+from gui.styles import dark
+from utils.about_dialog import AboutDialog
 from utils.message_box import MessageBox
+from utils.version import version
 
 logging.basicConfig(filename="stellar-csv-creator.log", format=f"%(asctime)s:%(levelname)s:%(message)s",
                     datefmt="%Y-%m-%dT%H:%M:%SZ", level=logging.INFO)
@@ -19,10 +21,9 @@ logging.basicConfig(filename="stellar-csv-creator.log", format=f"%(asctime)s:%(l
 class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(CSVCreator, self).__init__(parent)
-        self.version = "0.3.0"
+        self.version = version
         sys.excepthook = self.error_handler
 
-        self.app = QtWidgets.QApplication([])
         self.setupUi(self)
 
         # Set config
@@ -34,17 +35,22 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Configure GUI
         self.setWindowTitle(f"Stellar CSV Creator v{self.version}")
-        self.app.setStyle("Fusion")
         self.window_icon = QtGui.QIcon()
+
         if self.theme == "dark":
             self.dark_theme()
             self.window_icon_file = "gui/icons/stellar_dark.ico"
+            self.link_color = "#007bff"
         else:
             self.window_icon_file = "gui/icons/stellar_default.ico"
+            self.link_color = "#0000ff"
 
         # Set icons
         self.window_icon.addPixmap(QtGui.QPixmap(self.window_icon_file), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.setWindowIcon(self.window_icon)
+
+        # Set MessageBox instance
+        self.mb = MessageBox(self.theme)
 
         # Create address book DB
         self.db = QtSql.QSqlDatabase.addDatabase("QSQLITE")
@@ -69,9 +75,9 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.load_addresses()
 
         # Address book context menu
-        self.useAction = QtWidgets.QAction("Use", None)
-        self.editAction = QtWidgets.QAction("Edit", None)
-        self.deleteAction = QtWidgets.QAction("Delete", None)
+        self.useAction = QtWidgets.QAction("Use", self)
+        self.editAction = QtWidgets.QAction("Edit", self)
+        self.deleteAction = QtWidgets.QAction("Delete", self)
         self.tableAddresses.addAction(self.useAction)
         self.tableAddresses.addAction(self.editAction)
         self.tableAddresses.addAction(self.deleteAction)
@@ -87,7 +93,6 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         # Backend functions
         self.get_config()
         self.make_links()
-        self.mb = MessageBox()
 
     def load_addresses(self):
         self.model.select()
@@ -124,35 +129,14 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                 return True
         return False
 
-    def dark_theme(self):
-        palette = QtGui.QPalette()
-        palette.setColor(QtGui.QPalette.Window, QtGui.QColor(90, 90, 90))
-        palette.setColor(QtGui.QPalette.Base, QtGui.QColor(90, 90, 90))
-        palette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(90, 90, 90))
-        palette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.blue)
-        palette.setColor(QtGui.QPalette.Text, QtCore.Qt.white)
-        palette.setColor(QtGui.QPalette.Button, QtGui.QColor(90, 90, 90))
-        palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
-        palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.white)
-        palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(17, 31, 54))
-        palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.white)
-        palette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
-        palette.setColor(QtGui.QPalette.Link, QtCore.Qt.yellow)
-        palette.setColor(QtGui.QPalette.LinkVisited, QtCore.Qt.yellow)
+    def about_dialog(self):
+        AboutDialog(self.version, self.theme)
 
-        self.setPalette(palette)
-        self.app.setPalette(palette)
-        self.CreateCSV.setStyleSheet("QPushButton:disabled {color: #a1a1a1}")
-        self.GetBalance.setStyleSheet("QPushButton:disabled {color: #a1a1a1}")
-        self.radioButtonDarkMode.setStyleSheet("QRadioButton:disabled {color: #a1a1a1}")
-        self.radioButtonLightMode.setStyleSheet("QRadioButton:disabled {color: #a1a1a1}")
-        self.addAddress.setStyleSheet("QPushButton:disabled {color: #a1a1a1}")
-        self.app.setStyleSheet("QMenu {margin:5px}"
-                               "QMenu::item {padding: 2px 20px 2px 20px}"
-                               "QMenu::item:disabled {"
-                               "color: #a1a1a1;"
-                               "border: none}"
-                               "QMenu::item:selected {background: rgb(17, 31, 54)}")
+    def dark_theme(self):
+        file = QtCore.QFile(":/qdarkstyle/style.qss")
+        file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
+        stream = QtCore.QTextStream(file)
+        self.setStyleSheet(stream.readAll())
 
     def get_config(self):
         rb_light = self.radioButtonLightMode
@@ -193,6 +177,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.StartDate.textChanged.connect(self.enable_buttons)
         # Addresses tab
         self.ABAddress.returnPressed.connect(self.addAddress.click)
+        self.ABNickname.returnPressed.connect(self.addAddress.click)
         self.ABAddress.textChanged.connect(self.enable_buttons)
         self.ABAddress.textChanged['QString'].connect(self.enable_buttons)
         self.addAddress.clicked.connect(self.add_address)
@@ -219,16 +204,6 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             self.addAddress.setEnabled(False)
 
-    def about_dialog(self):
-        Dialog = QtWidgets.QDialog(None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
-                                   QtCore.Qt.WindowCloseButtonHint)
-        about = Ui_Dialog()
-        about.setupUi(Dialog)
-        Dialog.setWindowIcon(self.window_icon)
-        about.labelVersion.setText(f"<html><head/><body><p>Stellar CSV Creator v{self.version}</p></body></html>")
-        Dialog.show()
-        Dialog.exec_()
-
     def check_for_updates(self):
         session = requests_cache.CachedSession(cache_name="update_cache", expire_after=3600, extension=".db")
         with session:
@@ -237,7 +212,8 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             new_version = response[0]["tag_name"].replace("v", "")
             if new_version > self.version:
                 self.mb.message_box("<a href=\"https://github.com/usertxt/stellar-csv-creator/releases/latest\">"
-                                    f"Version {new_version} is available</a>", info=True)
+                                    f"<span style=\"text-decoration: underlined; color: {self.link_color}\">Version "
+                                    f"{new_version} is available</span></a>", info=True)
             else:
                 self.mb.message_box("You are using the latest release", info=True)
 
@@ -293,7 +269,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                     with open(f"{self.Address.text()}.csv", "a", newline="") as file:
                         writer = csv.writer(file)
                         writer.writerow(rows)
-                self.statusbar.showMessage("CSV created", msecs=3000)
+                self.statusbar.showMessage("CSV created", timeout=3000)
 
         except Exception as e:
             e = str(e)
@@ -309,10 +285,10 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             response = requests.get(url).json()
             balance_response = response["balances"][0]["balance"]
             if self.theme == "dark":
-                font_color = "orange"
+                text_color = self.link_color
             else:
-                font_color = "black"
-            self.console(f"<html><font color={font_color}>Balance: {balance_response} XLM</html>")
+                text_color = "black"
+            self.console(f"<font color=\"{text_color}\">Balance: {balance_response} XLM</font><p>")
 
         except Exception as e:
             e = getattr(e, "message", repr(e))
@@ -331,7 +307,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.app_config["THEME"] = "dark"
             with open(self.config_path, "w") as updated_config:
                 json.dump(self.config, updated_config, indent=2, sort_keys=False, ensure_ascii=True)
-            self.statusbar.showMessage("Settings saved", msecs=3000)
+            self.statusbar.showMessage("Settings saved", timeout=3000)
 
             if self.radioButtonLightMode.isChecked() and self.theme == "dark":
                 self.mb.theme_change_msgbox()
@@ -340,7 +316,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             e = getattr(e, "message", repr(e))
-            self.statusbar.showMessage("Unable to save settings", msecs=3000)
+            self.statusbar.showMessage("Unable to save settings", timeout=3000)
             self.console(e, error=True, log=True)
 
     def console(self, info, error=False, log=False):
@@ -365,5 +341,5 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     ui = CSVCreator()
-    CSVCreator.show(ui)
+    ui.show()
     sys.exit(app.exec_())
