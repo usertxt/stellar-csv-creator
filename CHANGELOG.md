@@ -6,6 +6,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2019-09-02
+### Added
+- Link to website in about dialog
+- Separator below information text
+- Ui layouts
+- date_format function
+- Double click functionality to address book
+- Version file for easier version tracking
+
+### Changed
+- Frontend now uses PySide2
+- Rearranged input fields
+- Ui now conforms upon window being resized
+- Theme change message box notice text
+- Theme change message box icon from notice to warning
+- Moved about dialog to separate module
+- Better theme checking in utils modules
+- Dark theme now uses a customized QSS using [QDarkStyleSheet](https://github.com/ColinDuquesnoy/QDarkStyleSheet)
+- Update cache now uses db extension
+- Icon variable names in main script
+- create_csv function uses new date_format function for cleaner code
+
+### Removed
+- Custom clear text button
+- Icons8 link, app no longer uses custom clear text icon
+- Redundant second QApplication instance from main script
+
+### Fixed
+- Window icons now use the proper size from ico files
+- Running about dialog no longer opens multiple dialog windows
+
 ## [0.3.0] - 2019-08-12
 ### Added
 - Themed Stellar window icons (default and dark modes)
@@ -33,7 +64,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - First beta release
 
-[Unreleased]: https://github.com/usertxt/stellar-csv-creator/compare/v0.3.0...dev
+[Unreleased]: https://github.com/usertxt/stellar-csv-creator/compare/v0.4.0...dev
+[0.4.0]: https://github.com/usertxt/stellar-csv-creator/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/usertxt/stellar-csv-creator/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/usertxt/stellar-csv-creator/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/usertxt/stellar-csv-creator/compare/v0.1.0...v0.2.0
