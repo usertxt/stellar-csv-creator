@@ -190,6 +190,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.useAction.triggered.connect(self.use_address)
         self.editAction.triggered.connect(self.edit_address)
         self.deleteAction.triggered.connect(self.delete_address)
+        self.tableAddresses.doubleClicked.connect(self.use_address)
         # Settings tab
         self.SaveSettings.clicked.connect(self.save_settings)
         self.resetButton.clicked.connect(self.get_config)
