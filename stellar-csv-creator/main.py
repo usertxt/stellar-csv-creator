@@ -52,6 +52,9 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         # Set MessageBox instance
         self.mb = MessageBox(self.theme)
 
+        # Set About Dialog instance
+        self.about_window = None
+
         # Create address book DB
         self.db = QtSql.QSqlDatabase.addDatabase("QSQLITE")
         self.db.setDatabaseName('addresses.db')
@@ -130,7 +133,10 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         return False
 
     def about_dialog(self):
-        AboutDialog(self.version, self.theme)
+        if self.about_window is None:
+            self.about_window = AboutDialog(self.version, self.theme, self.link_color, self.window_icon_file)
+        self.about_window.show()
+        self.about_window.activateWindow()
 
     def dark_theme(self):
         file = QtCore.QFile(":/qdarkstyle/style.qss")
