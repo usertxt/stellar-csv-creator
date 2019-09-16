@@ -1,7 +1,6 @@
 import csv
 import json
 import logging
-import os
 import sys
 from datetime import datetime
 
@@ -15,6 +14,10 @@ from utils.about_dialog import AboutDialog
 from utils.message_box import MessageBox
 from utils.version import version
 from utils.util import *
+
+path = user_dir()
+make_dir(path)
+setup_config()
 
 log_file = f"{user_dir()}/stellar-csv-creator.log"
 
