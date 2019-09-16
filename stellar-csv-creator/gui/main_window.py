@@ -287,6 +287,10 @@ class Ui_MainWindow(object):
         self.actionAbout.setObjectName("actionAbout")
         self.actionCheck_for_updates = QtWidgets.QAction(MainWindow)
         self.actionCheck_for_updates.setObjectName("actionCheck_for_updates")
+        self.actionSave_Settings = QtWidgets.QAction(MainWindow)
+        self.actionSave_Settings.setObjectName("actionSave_Settings")
+        self.menuFile.addAction(self.actionSave_Settings)
+        self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExit)
         self.menuHelp.addAction(self.actionAbout)
         self.menuHelp.addAction(self.actionCheck_for_updates)
@@ -365,4 +369,6 @@ class Ui_MainWindow(object):
         self.actionExit.setShortcut(QtWidgets.QApplication.translate("MainWindow", "Ctrl+Q", None, -1))
         self.actionAbout.setText(QtWidgets.QApplication.translate("MainWindow", "About", None, -1))
         self.actionCheck_for_updates.setText(QtWidgets.QApplication.translate("MainWindow", "Check for updates", None, -1))
+        self.actionSave_Settings.setText(QtWidgets.QApplication.translate("MainWindow", "Save Settings", None, -1))
+        self.actionSave_Settings.setShortcut(QtWidgets.QApplication.translate("MainWindow", "Ctrl+S", None, -1))
 

@@ -174,6 +174,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def make_links(self):
         # Menu bar
+        self.actionSave_Settings.triggered.connect(self.save_settings)
         self.actionExit.triggered.connect(self.exit_app)
         self.actionAbout.triggered.connect(self.about_dialog)
         self.actionCheck_for_updates.triggered.connect(self.check_for_updates)
