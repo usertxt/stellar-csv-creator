@@ -1,6 +1,7 @@
 import csv
 import json
 import logging
+import os
 import sys
 from datetime import datetime
 
@@ -15,7 +16,7 @@ from utils.message_box import MessageBox
 from utils.version import version
 from utils.util import *
 
-log_file = f"{user_dir()}\\stellar-csv-creator.log"
+log_file = f"{user_dir()}/stellar-csv-creator.log"
 
 logging.basicConfig(filename=log_file, format=f"%(asctime)s:%(levelname)s:%(message)s",
                     datefmt="%Y-%m-%dT%H:%M:%SZ", level=logging.INFO)
@@ -30,7 +31,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         # Set config
-        self.config_path = f"{user_dir()}\\config.json"
+        self.config_path = f"{user_dir()}/config.json"
         self.config = json.load(open(self.config_path))
         self.csv_config = self.config["CSV"]
         self.app_config = self.config["APP"]
@@ -60,7 +61,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Create address book DB
         self.db = QtSql.QSqlDatabase.addDatabase("QSQLITE")
-        self.db.setDatabaseName(f"{user_dir()}\\addresses.db")
+        self.db.setDatabaseName(f"{user_dir()}/addresses.db")
         if not self.db.open():
             self.mb.message_box("Unable to establish a database connection.\n"
                                 "This example needs SQLite support. Please read "
@@ -215,7 +216,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             self.addAddress.setEnabled(False)
 
     def check_for_updates(self):
-        session = requests_cache.CachedSession(cache_name=f"{user_dir()}\\update_cache", expire_after=3600, extension=".db")
+        session = requests_cache.CachedSession(cache_name=f"{user_dir()}/update_cache", expire_after=3600, extension=".db")
         with session:
             response = session.get("https://api.github.com/repos/usertxt/stellar-csv-creator/releases")
             response = response.json()
