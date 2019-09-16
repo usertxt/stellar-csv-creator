@@ -13,16 +13,7 @@ from gui.styles import dark
 from utils.about_dialog import AboutDialog
 from utils.message_box import MessageBox
 from utils.version import version
-from utils.util import *
-
-path = user_dir()
-make_dir(path)
-setup_config()
-
-log_file = f"{user_dir()}/stellar-csv-creator.log"
-
-logging.basicConfig(filename=log_file, format=f"%(asctime)s:%(levelname)s:%(message)s",
-                    datefmt="%Y-%m-%dT%H:%M:%SZ", level=logging.INFO)
+from utils.util import (user_dir, make_dir, setup_config)
 
 
 class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -353,6 +344,15 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
 
 
 if __name__ == "__main__":
+    path = user_dir()
+    make_dir(path)
+
+    log_file = f"{user_dir()}/stellar-csv-creator.log"
+    logging.basicConfig(filename=log_file, format=f"%(asctime)s:%(levelname)s:%(message)s",
+                        datefmt="%Y-%m-%dT%H:%M:%SZ", level=logging.INFO)
+    logging.info("App started")
+    setup_config()
+
     app = QtWidgets.QApplication(sys.argv)
     ui = CSVCreator()
     ui.show()

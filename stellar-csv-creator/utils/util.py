@@ -1,6 +1,7 @@
 import os
 import json
 import stat
+import logging
 
 
 def user_dir():
@@ -11,7 +12,6 @@ def user_dir():
 
 
 def make_dir(path, allow_symlink=True):
-    """Make directory if it does not yet exist."""
     if not os.path.exists(path):
         if not allow_symlink and os.path.islink(path):
             raise Exception('Dangling link: ' + path)
@@ -35,3 +35,6 @@ def setup_config():
                 }
         with open(config_file, "w") as f:
             f.write(json.dumps(config, indent=2))
+        logging.info(f"Config not found. Creating config file in {user_dir()}")
+    else:
+        logging.info("Config found. Skipping creation.")
