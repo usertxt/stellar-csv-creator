@@ -150,6 +150,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Memo.setText(self.csv_config["MEMO"])
         self.MinThresh.setText(self.csv_config["MIN_THRESH"])
         self.MaxThresh.setText(self.csv_config["MAX_THRESH"])
+        self.CSVOutputDest.setText(self.csv_config["DESTINATION"].upper())
 
         if self.theme == "default":
             rb_light.click()
@@ -283,6 +284,8 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             if e == "'amount'":
                 e = e.replace("'amount'", f"End of transactions from {start_date_console} to {end_date_console}")
                 self.console(e, log=True)
+                self.console(f"Succesfully created<br>{self.Address.text()}.csv<br>"
+                             f"in folder {self.csv_config['DESTINATION'].upper()}<p>", log=True)
             else:
                 self.console(e, error=True, log=True)
 
@@ -295,7 +298,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                 text_color = self.link_color
             else:
                 text_color = "black"
-            self.console(f"<font color=\"{text_color}\">Balance: {balance_response} XLM</font><p>")
+            self.console(f"<p><font color=\"{text_color}\">Balance: {balance_response} XLM</font><p>")
 
         except Exception as e:
             e = getattr(e, "message", repr(e))
@@ -308,12 +311,16 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             self.csv_config["MAX_THRESH"] = self.MaxThresh.text()
             self.csv_config["SOURCE"] = self.Source.text()
             self.csv_config["MEMO"] = self.Memo.text()
+            self.csv_config["DESTINATION"] = self.CSVOutputDest.text()
+
             if self.radioButtonLightMode.isChecked():
                 self.app_config["THEME"] = "default"
             else:
                 self.app_config["THEME"] = "dark"
+
             with open(self.config_path, "w") as updated_config:
                 json.dump(self.config, updated_config, indent=2, sort_keys=False, ensure_ascii=True)
+
             self.statusbar.showMessage("Settings saved", timeout=3000)
 
             if self.radioButtonLightMode.isChecked() and self.theme == "dark":
