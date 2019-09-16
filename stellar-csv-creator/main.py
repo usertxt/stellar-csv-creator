@@ -2,6 +2,7 @@ import csv
 import json
 import logging
 import sys
+import os
 from datetime import datetime
 
 import requests
@@ -144,7 +145,8 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def folder_dialog(self):
         folder = QtWidgets.QFileDialog.getExistingDirectory()
-        self.CSVOutputDest.setText(folder)
+        if folder != "":
+            self.CSVOutputDest.setText(folder)
 
     def get_config(self):
         rb_light = self.radioButtonLightMode
