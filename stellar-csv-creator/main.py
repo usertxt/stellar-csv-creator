@@ -247,8 +247,9 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         threshold_max = float(self.csv_config["MAX_THRESH"])
 
         try:
+            csv_file = f"{self.csv_config['DESTINATION']}/{self.Address.text()}.csv"
             top_row = ("Date", "Action", "Volume", "Symbol", "Source", "Memo")
-            with open(f"{self.Address.text()}.csv", "w", newline="") as file:
+            with open(csv_file, "w", newline="") as file:
                 writer = csv.writer(file)
                 writer.writerow(top_row)
 
@@ -272,7 +273,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                     rows = (created_at, action, amount, symbol, source, memo)
                     logging.info(rows)
                     self.output.append(str(rows))
-                    with open(f"{self.Address.text()}.csv", "a", newline="") as file:
+                    with open(csv_file, "a", newline="") as file:
                         writer = csv.writer(file)
                         writer.writerow(rows)
                 self.statusbar.showMessage("CSV created", timeout=3000)

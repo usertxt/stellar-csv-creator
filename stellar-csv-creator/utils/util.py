@@ -30,7 +30,8 @@ def setup_config():
                     "MIN_THRESH": "1",
                     "MAX_THRESH": "2",
                     "SOURCE": "Source",
-                    "MEMO": "Memo"
+                    "MEMO": "Memo",
+                    "DESTINATION": user_dir()
                   }
                 }
         with open(config_file, "w") as f:
