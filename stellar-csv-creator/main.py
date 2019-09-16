@@ -210,7 +210,8 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             self.addAddress.setEnabled(False)
 
     def check_for_updates(self):
-        session = requests_cache.CachedSession(cache_name=f"{user_dir()}/update_cache", expire_after=3600, extension=".db")
+        session = requests_cache.CachedSession(cache_name=f"{user_dir()}/update_cache", expire_after=3600,
+                                               extension=".db")
         with session:
             response = session.get("https://api.github.com/repos/usertxt/stellar-csv-creator/releases")
             response = response.json()
