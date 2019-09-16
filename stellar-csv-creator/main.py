@@ -26,7 +26,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         # Set config
-        self.config_path = f"{user_dir()}/config.json"
+        self.config_path = os.path.join(user_dir(), "config.json")
         self.config = json.load(open(self.config_path))
         self.csv_config = self.config["CSV"]
         self.app_config = self.config["APP"]
@@ -56,7 +56,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Create address book DB
         self.db = QtSql.QSqlDatabase.addDatabase("QSQLITE")
-        self.db.setDatabaseName(f"{user_dir()}/addresses.db")
+        self.db.setDatabaseName(os.path.join(user_dir(), "addresses.db"))
         if not self.db.open():
             self.mb.message_box("Unable to establish a database connection.\n"
                                 "This example needs SQLite support. Please read "
@@ -219,7 +219,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             self.addAddress.setEnabled(False)
 
     def check_for_updates(self):
-        session = requests_cache.CachedSession(cache_name=f"{user_dir()}/update_cache", expire_after=3600,
+        session = requests_cache.CachedSession(cache_name=os.path.join(user_dir(), "update_cache"), expire_after=3600,
                                                extension=".db")
         with session:
             response = session.get("https://api.github.com/repos/usertxt/stellar-csv-creator/releases")
@@ -361,10 +361,10 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
 
 
 if __name__ == "__main__":
-    path = user_dir()
-    make_dir(path)
+    make_dir(user_dir())
+    make_dir(os.path.join(user_dir(), "CSV Files"))
 
-    log_file = f"{user_dir()}/stellar-csv-creator.log"
+    log_file = os.path.join(user_dir(), "stellar-csv-creator.log")
     logging.basicConfig(filename=log_file, format=f"%(asctime)s:%(levelname)s:%(message)s",
                         datefmt="%Y-%m-%dT%H:%M:%SZ", level=logging.INFO)
     logging.info("App started")

@@ -20,7 +20,7 @@ def make_dir(path, allow_symlink=True):
 
 
 def setup_config():
-    config_file = f"{user_dir()}/config.json"
+    config_file = os.path.join(user_dir(), "config.json")
     if not os.path.exists(config_file):
         config = {
                   "APP": {
@@ -31,7 +31,7 @@ def setup_config():
                     "MAX_THRESH": "2",
                     "SOURCE": "Source",
                     "MEMO": "Memo",
-                    "DESTINATION": user_dir()
+                    "DESTINATION": os.path.join(user_dir(), "CSV Files")
                   }
                 }
         with open(config_file, "w") as f:
