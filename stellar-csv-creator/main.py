@@ -142,6 +142,10 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         stream = QtCore.QTextStream(file)
         self.setStyleSheet(stream.readAll())
 
+    def folder_dialog(self):
+        folder = QtWidgets.QFileDialog.getExistingDirectory()
+        self.CSVOutputDest.setText(folder)
+
     def get_config(self):
         rb_light = self.radioButtonLightMode
         rb_dark = self.radioButtonDarkMode
@@ -150,7 +154,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Memo.setText(self.csv_config["MEMO"])
         self.MinThresh.setText(self.csv_config["MIN_THRESH"])
         self.MaxThresh.setText(self.csv_config["MAX_THRESH"])
-        self.CSVOutputDest.setText(self.csv_config["DESTINATION"].upper())
+        self.CSVOutputDest.setText(self.csv_config["DESTINATION"])
 
         if self.theme == "default":
             rb_light.click()
@@ -193,6 +197,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         # Settings tab
         self.SaveSettings.clicked.connect(self.save_settings)
         self.resetButton.clicked.connect(self.get_config)
+        self.folderButton.clicked.connect(self.folder_dialog)
 
     def enable_buttons(self):
         if self.Address.text():
@@ -285,7 +290,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                 e = e.replace("'amount'", f"End of transactions from {start_date_console} to {end_date_console}")
                 self.console(e, log=True)
                 self.console(f"Succesfully created<br>{self.Address.text()}.csv<br>"
-                             f"in folder {self.csv_config['DESTINATION'].upper()}<p>", log=True)
+                             f"in folder {self.csv_config['DESTINATION']}<p>", log=True)
             else:
                 self.console(e, error=True, log=True)
 
