@@ -40,9 +40,11 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             self.dark_theme()
             self.window_icon_file = "gui/icons/stellar_dark.ico"
             self.link_color = "#007bff"
+            self.error_color = "#ff4f4f"
         else:
             self.window_icon_file = "gui/icons/stellar_default.ico"
             self.link_color = "#0000ff"
+            self.error_color = "red"
 
         # Set icons
         self.window_icon.addPixmap(QtGui.QPixmap(self.window_icon_file), QtGui.QIcon.Normal, QtGui.QIcon.On)
@@ -321,18 +323,21 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         try:
             if not (self.MinThresh.text().isdigit() and self.MaxThresh.text().isdigit() or
                     isfloat(self.MinThresh.text()) and isfloat(self.MaxThresh.text())):
-                self.mb.message_box("Minimum Threshold and Maximum Threshold must be digits only", warning=True)
                 self.statusbar.showMessage("Settings not saved", timeout=3000)
-                self.MinThresh.setText(self.csv_config["MIN_THRESH"])
-                self.MaxThresh.setText(self.csv_config["MAX_THRESH"])
+                self.labelMinThresh.setStyleSheet(f"color: {self.error_color};")
+                self.labelMaxThresh.setStyleSheet(f"color: {self.error_color};")
+                self.mb.message_box("Minimum Threshold and Maximum Threshold must be numbers only", warning=True)
 
             elif self.MinThresh.text() > self.MaxThresh.text():
-                self.mb.message_box("Minimum Threshold must be less than Maximum Threshold", warning=True)
                 self.statusbar.showMessage("Settings not saved", timeout=3000)
-                self.MinThresh.setText(self.csv_config["MIN_THRESH"])
-                self.MaxThresh.setText(self.csv_config["MAX_THRESH"])
+                self.labelMinThresh.setStyleSheet(f"color: {self.error_color};")
+                self.labelMaxThresh.setStyleSheet(f"color: {self.error_color};")
+                self.mb.message_box("Minimum Threshold must be less than Maximum Threshold", warning=True)
 
             else:
+                self.labelMinThresh.setStyleSheet("")
+                self.labelMaxThresh.setStyleSheet("")
+
                 with open(self.config_path, "w") as updated_config:
                     if self.radioButtonLightMode.isChecked():
                         self.app_config["THEME"] = "default"
@@ -361,10 +366,8 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         console_append = f"<html><b>{info}</b></html>"
         if log:
             logging.info(info)
-        if error and self.theme == "default":
-            console_append = f"<html><font color=red><b>{info}</b></font></html>"
-        elif error and self.theme == "dark":
-            console_append = f"<html><font color=#ff4f4f><b>{info}</b></font></html>"
+        if error:
+            console_append = f"<html><font color={self.error_color}><b>{info}</b></font></html>"
 
         return self.output.append(console_append)
 
