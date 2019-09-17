@@ -14,7 +14,7 @@ from gui.styles import dark
 from utils.about_dialog import AboutDialog
 from utils.message_box import MessageBox
 from utils.version import version
-from utils.util import (user_dir, make_dir, setup_config)
+from utils.util import (open_folder, user_dir, make_dir, setup_config)
 
 
 class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -187,6 +187,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Address.returnPressed.connect(self.CreateCSV.click)
         self.Address.textChanged['QString'].connect(self.enable_buttons)
         self.StartDate.textChanged.connect(self.enable_buttons)
+        self.output.anchorClicked.connect(lambda: open_folder(self.csv_config["DESTINATION"]))
         # Addresses tab
         self.ABAddress.returnPressed.connect(self.addAddress.click)
         self.ABNickname.returnPressed.connect(self.addAddress.click)
@@ -201,6 +202,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.SaveSettings.clicked.connect(self.save_settings)
         self.resetButton.clicked.connect(self.get_config)
         self.folderButton.clicked.connect(self.folder_dialog)
+        self.openFolderButton.clicked.connect(lambda: open_folder(self.csv_config["DESTINATION"]))
 
     def enable_buttons(self):
         if self.Address.text():
@@ -290,10 +292,12 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         except Exception as e:
             e = str(e)
             if e == "'amount'":
-                e = e.replace("'amount'", f"End of transactions from {start_date_console} to {end_date_console}")
+                path = self.csv_config["DESTINATION"]
+                e = e.replace("'amount'", f"End of transactions from {start_date_console} to {end_date_console}<p>")
                 self.console(e, log=True)
-                self.console(f"Succesfully created<br>{self.Address.text()}.csv<br>"
-                             f"in folder {self.csv_config['DESTINATION']}<p>", log=True)
+                self.console(f"<html>Successfully created<br>{self.Address.text()}.csv<br>"
+                             f"in folder <a href='{path}'><font color='{self.link_color}'>{path}</font></a><p></html>")
+                logging.info(f"Successfully created {self.Address.text()}.csv in {path}")
             else:
                 self.console(e, error=True, log=True)
 

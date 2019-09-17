@@ -2,10 +2,21 @@ import os
 import json
 import stat
 import logging
+import platform
+import subprocess
+
+
+def open_folder(path):
+    if platform.system() == "Windows":
+        os.startfile(path)
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", path])
+    else:
+        subprocess.Popen(["xdg-open", path])
 
 
 def user_dir():
-    if os.name == 'posix':
+    if os.name == "posix":
         return os.path.join(os.environ["HOME"], ".stellar-csv-creator")
     elif "APPDATA" in os.environ:
         return os.path.join(os.environ["APPDATA"], "Stellar CSV Creator")
@@ -14,7 +25,7 @@ def user_dir():
 def make_dir(path, allow_symlink=True):
     if not os.path.exists(path):
         if not allow_symlink and os.path.islink(path):
-            raise Exception('Dangling link: ' + path)
+            raise Exception("Dangling link: " + path)
         os.mkdir(path)
         os.chmod(path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
 
