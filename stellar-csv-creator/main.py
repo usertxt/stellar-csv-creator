@@ -14,7 +14,7 @@ from gui.styles import dark
 from utils.about_dialog import AboutDialog
 from utils.message_box import MessageBox
 from utils.version import version
-from utils.util import (open_folder, user_dir, make_dir, setup_config)
+from utils.util import (open_folder, user_dir, make_dir, setup_config, isfloat)
 
 
 class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -319,21 +319,33 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def save_settings(self):
         try:
-            self.csv_config["MIN_THRESH"] = self.MinThresh.text()
-            self.csv_config["MAX_THRESH"] = self.MaxThresh.text()
-            self.csv_config["SOURCE"] = self.Source.text()
-            self.csv_config["MEMO"] = self.Memo.text()
-            self.csv_config["DESTINATION"] = self.CSVOutputDest.text()
+            if not (self.MinThresh.text().isdigit() and self.MaxThresh.text().isdigit() or
+                    isfloat(self.MinThresh.text()) and isfloat(self.MaxThresh.text())):
+                self.mb.message_box("Minimum Threshold and Maximum Threshold must be digits only", warning=True)
+                self.statusbar.showMessage("Settings not saved", timeout=3000)
+                self.MinThresh.setText(self.csv_config["MIN_THRESH"])
+                self.MaxThresh.setText(self.csv_config["MAX_THRESH"])
 
-            if self.radioButtonLightMode.isChecked():
-                self.app_config["THEME"] = "default"
+            elif self.MinThresh.text() > self.MaxThresh.text():
+                self.mb.message_box("Minimum Threshold must be less than Maximum Threshold", warning=True)
+                self.statusbar.showMessage("Settings not saved", timeout=3000)
+                self.MinThresh.setText(self.csv_config["MIN_THRESH"])
+                self.MaxThresh.setText(self.csv_config["MAX_THRESH"])
+
             else:
-                self.app_config["THEME"] = "dark"
+                with open(self.config_path, "w") as updated_config:
+                    if self.radioButtonLightMode.isChecked():
+                        self.app_config["THEME"] = "default"
+                    else:
+                        self.app_config["THEME"] = "dark"
+                    self.csv_config["MIN_THRESH"] = self.MinThresh.text()
+                    self.csv_config["MAX_THRESH"] = self.MaxThresh.text()
+                    self.csv_config["SOURCE"] = self.Source.text()
+                    self.csv_config["MEMO"] = self.Memo.text()
+                    self.csv_config["DESTINATION"] = self.CSVOutputDest.text()
 
-            with open(self.config_path, "w") as updated_config:
-                json.dump(self.config, updated_config, indent=2, sort_keys=False, ensure_ascii=True)
-
-            self.statusbar.showMessage("Settings saved", timeout=3000)
+                    json.dump(self.config, updated_config, indent=2, sort_keys=False, ensure_ascii=True)
+                    self.statusbar.showMessage("Settings saved", timeout=3000)
 
             if self.radioButtonLightMode.isChecked() and self.theme == "dark":
                 self.mb.theme_change_msgbox()

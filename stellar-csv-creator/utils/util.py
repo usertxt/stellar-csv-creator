@@ -46,7 +46,15 @@ def setup_config():
                   }
                 }
         with open(config_file, "w") as f:
-            f.write(json.dumps(config, indent=2))
+            f.write(json.dumps(config, indent=2, sort_keys=False, ensure_ascii=True))
         logging.info(f"Config not found. Creating config file in {user_dir()}")
     else:
         logging.info("Config found. Skipping creation.")
+
+
+def isfloat(num):
+    try:
+        float(num)
+        return True
+    except ValueError:
+        return False
