@@ -14,7 +14,7 @@ from gui.styles import dark
 from utils.about_dialog import AboutDialog
 from utils.message_box import MessageBox
 from utils.version import version
-from utils.util import (open_folder, user_dir, make_dir, setup_config, isfloat)
+from utils.util import (date_format, open_folder, user_dir, make_dir, setup_config, isfloat, exit_app)
 
 
 class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -50,11 +50,11 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.window_icon.addPixmap(QtGui.QPixmap(self.window_icon_file), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.setWindowIcon(self.window_icon)
 
-        # Set MessageBox instance
+        # Set utils instances
         self.mb = MessageBox(self.theme)
-
-        # Set About Dialog instance
+        self.date_format = date_format
         self.about_window = None
+        self.exit_app = exit_app
 
         # Create address book DB
         self.db = QtSql.QSqlDatabase.addDatabase("QSQLITE")
@@ -236,13 +236,6 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             else:
                 self.mb.message_box("You are using the latest release", info=True)
 
-    def date_format(self, text, str_object=False, date_object=False):
-        if str_object:
-            text = datetime.strftime(text, "%Y-%m-%d")
-        if date_object:
-            text = datetime.strptime(text, "%Y-%m-%d")
-        return text
-
     def create_csv(self):
         url = f"https://horizon.stellar.org/accounts/{self.Address.text()}/effects?cursor=&limit=100&order=desc"
         main_response = requests.get(url).json()
@@ -370,9 +363,6 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             console_append = f"<html><font color={self.error_color}><b>{info}</b></font></html>"
 
         return self.output.append(console_append)
-
-    def exit_app(self):
-        sys.exit()
 
     def error_handler(self, exc_type, exc_value, exc_traceback):
         logging.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))

@@ -4,6 +4,16 @@ import stat
 import logging
 import platform
 import subprocess
+import sys
+from datetime import datetime
+
+
+def date_format(text, str_object=False, date_object=False):
+    if str_object:
+        text = datetime.strftime(text, "%Y-%m-%d")
+    if date_object:
+        text = datetime.strptime(text, "%Y-%m-%d")
+    return text
 
 
 def open_folder(path):
@@ -58,3 +68,8 @@ def isfloat(num):
         return True
     except ValueError:
         return False
+
+
+def exit_app():
+    sys.exit()
+
