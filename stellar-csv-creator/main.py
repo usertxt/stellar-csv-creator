@@ -282,7 +282,6 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                     with open(csv_file, "a", newline="") as file:
                         writer = csv.writer(file)
                         writer.writerow(rows)
-                self.statusbar.showMessage("CSV created", timeout=3000)
 
         except Exception as e:
             e = str(e)
@@ -293,6 +292,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.console(f"<html>Successfully created<br>{self.Address.text()}.csv<br>"
                              f"in folder <a href='{path}'><font color='{self.link_color}'>{path}</font></a><p></html>")
                 logging.info(f"Successfully created {self.Address.text()}.csv in {path}")
+                self.statusbar.showMessage("CSV created", timeout=3000)
             else:
                 self.console(e, error=True, log=True)
 
