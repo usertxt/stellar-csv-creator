@@ -253,18 +253,13 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         threshold_max = float(self.csv_config["MAX_THRESH"])
 
         try:
-            csv_file = f"{self.csv_config['DESTINATION']}/{self.Address.text()}.csv"
-            top_row = ("Date", "Action", "Volume", "Symbol", "Source", "Memo")
-            with open(csv_file, "w", newline="") as file:
-                writer = csv.writer(file)
-                writer.writerow(top_row)
-
-            self.console(f"Creating CSV with transactions from {start_date_console} to {end_date_console}", log=True)
-            logging.info(top_row)
-            self.output.append(str(top_row))
+            rows_list = []
+            self.console(f"Searching for transactions from {start_date_console} to {end_date_console}<br>"
+                         f"Thresholds are set to {self.csv_config['MIN_THRESH']} (MIN) and "
+                         f"{self.csv_config['MAX_THRESH']} (MAX)<p>", log=True)
             for tx in main_response:
                 created_at = tx["created_at"]
-                amount = tx["amount"]
+                amount = tx.get("amount", 0)
 
                 dates = datetime.strptime(created_at, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d")
                 dates_formatted = self.date_format(dates, date_object=True)
@@ -277,24 +272,36 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                     source = self.csv_config["SOURCE"]
                     memo = self.csv_config["MEMO"]
                     rows = (created_at, action, amount, symbol, source, memo)
-                    logging.info(rows)
-                    self.output.append(str(rows))
+                    rows_list.append(rows)
+
+            if rows_list:
+                csv_file = f"{self.csv_config['DESTINATION']}/{self.Address.text()}.csv"
+                top_row = ("Date", "Action", "Volume", "Symbol", "Source", "Memo")
+                with open(csv_file, "w", newline="") as file:
+                    writer = csv.writer(file)
+                    writer.writerow(top_row)
+
+                self.console(f"Creating CSV", log=True)
+                logging.info(top_row)
+                self.output.append(str(top_row))
+                for items in rows_list:
                     with open(csv_file, "a", newline="") as file:
                         writer = csv.writer(file)
-                        writer.writerow(rows)
-
-        except Exception as e:
-            e = str(e)
-            if e == "'amount'":
+                        writer.writerow(items)
+                    logging.info(items)
+                    self.output.append(str(items))
                 path = self.csv_config["DESTINATION"]
-                e = e.replace("'amount'", f"End of transactions from {start_date_console} to {end_date_console}<p>")
-                self.console(e, log=True)
-                self.console(f"<html>Successfully created<br>{self.Address.text()}.csv<br>"
-                             f"in folder <a href='{path}'><font color='{self.link_color}'>{path}</font></a><p></html>")
+                self.console(f"End of transactions from {start_date_console} to {end_date_console}<p>")
+                self.console(f"Successfully created<br>{self.Address.text()}.csv<br>"
+                             f"in folder <a href='{path}'><font color='{self.link_color}'>{path}</font></a><p>")
                 logging.info(f"Successfully created {self.Address.text()}.csv in {path}")
                 self.statusbar.showMessage("CSV created", timeout=3000)
             else:
-                self.console(e, error=True, log=True)
+                self.console("No transactions found<p>", error=True, log=True)
+
+        except Exception as e:
+            e = getattr(e, "message", repr(e))
+            self.console(e, error=True, log=True)
 
     def get_balance(self):
         try:
