@@ -252,8 +252,16 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         threshold_min = float(self.csv_config["MIN_THRESH"])
         threshold_max = float(self.csv_config["MAX_THRESH"])
 
+        csv_file = f"{self.csv_config['DESTINATION']}/{self.Address.text()}.csv"
+        top_row = ("Date", "Action", "Volume", "Symbol", "Source", "Memo")
+        action = "INCOME"
+        symbol = "XLM"
+        source = self.csv_config["SOURCE"]
+        memo = self.csv_config["MEMO"]
+        path = self.csv_config["DESTINATION"]
+        rows_list = []
+
         try:
-            rows_list = []
             self.console(f"Searching for transactions from {start_date_console} to {end_date_console}<br>"
                          f"Thresholds are set to {self.csv_config['MIN_THRESH']} (MIN) and "
                          f"{self.csv_config['MAX_THRESH']} (MAX)<p>", log=True)
@@ -261,22 +269,17 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                 created_at = tx["created_at"]
                 amount = tx.get("amount", 0)
 
+                rows = (created_at, action, amount, symbol, source, memo)
+
                 dates = datetime.strptime(created_at, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d")
                 dates_formatted = self.date_format(dates, date_object=True)
 
                 if float(amount) > threshold_max or float(amount) < threshold_min:
                     pass
                 elif start_date <= dates_formatted <= end_date:
-                    action = "INCOME"
-                    symbol = "XLM"
-                    source = self.csv_config["SOURCE"]
-                    memo = self.csv_config["MEMO"]
-                    rows = (created_at, action, amount, symbol, source, memo)
                     rows_list.append(rows)
 
             if rows_list:
-                csv_file = f"{self.csv_config['DESTINATION']}/{self.Address.text()}.csv"
-                top_row = ("Date", "Action", "Volume", "Symbol", "Source", "Memo")
                 with open(csv_file, "w", newline="") as file:
                     writer = csv.writer(file)
                     writer.writerow(top_row)
@@ -284,13 +287,14 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.console(f"Creating CSV", log=True)
                 logging.info(top_row)
                 self.output.append(str(top_row))
+
                 for items in rows_list:
                     with open(csv_file, "a", newline="") as file:
                         writer = csv.writer(file)
                         writer.writerow(items)
                     logging.info(items)
                     self.output.append(str(items))
-                path = self.csv_config["DESTINATION"]
+
                 self.console(f"End of transactions from {start_date_console} to {end_date_console}<p>")
                 self.console(f"Successfully created<br>{self.Address.text()}.csv<br>"
                              f"in folder <a href='{path}'><font color='{self.link_color}'>{path}</font></a><p>")
@@ -327,13 +331,11 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.labelMinThresh.setStyleSheet(f"color: {self.error_color};")
                 self.labelMaxThresh.setStyleSheet(f"color: {self.error_color};")
                 self.mb.message_box("Minimum Threshold and Maximum Threshold must be numbers only", warning=True)
-
             elif self.MinThresh.text() > self.MaxThresh.text():
                 self.statusbar.showMessage("Settings not saved", timeout=3000)
                 self.labelMinThresh.setStyleSheet(f"color: {self.error_color};")
                 self.labelMaxThresh.setStyleSheet(f"color: {self.error_color};")
                 self.mb.message_box("Minimum Threshold must be less than Maximum Threshold", warning=True)
-
             else:
                 self.labelMinThresh.setStyleSheet("")
                 self.labelMaxThresh.setStyleSheet("")
