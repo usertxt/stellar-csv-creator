@@ -16,7 +16,7 @@ def date_format(text, str_object=False, date_object=False):
     return text
 
 
-def open_folder(path):
+def open_path(path):
     if platform.system() == "Windows":
         os.startfile(path)
     elif platform.system() == "Darwin":
@@ -72,4 +72,3 @@ def isfloat(num):
 
 def exit_app():
     sys.exit()
-

@@ -15,13 +15,14 @@ from gui.styles import dark
 from utils.about_dialog import AboutDialog
 from utils.message_box import MessageBox
 from utils.version import version
-from utils.util import (date_format, open_folder, user_dir, make_dir, setup_config, isfloat, exit_app)
+from utils.util import (date_format, open_path, user_dir, make_dir, setup_config, isfloat, exit_app)
 
 
 class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(CSVCreator, self).__init__(parent)
         self.version = version
+        self.log_file = os.path.join(user_dir(), "stellar-csv-creator.log")
         sys.excepthook = self.error_handler
 
         self.setupUi(self)
@@ -182,6 +183,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionSave_Settings.triggered.connect(self.save_settings)
         self.actionExit.triggered.connect(self.exit_app)
         self.actionAbout.triggered.connect(self.about_dialog)
+        self.actionOpen_Log.triggered.connect(lambda: open_path(self.log_file))
         self.actionCheck_for_updates.triggered.connect(self.check_for_updates)
         # Main tab
         self.CreateCSV.clicked.connect(self.create_csv)
@@ -190,7 +192,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Address.returnPressed.connect(self.CreateCSV.click)
         self.Address.textChanged['QString'].connect(self.enable_buttons)
         self.StartDate.textChanged.connect(self.enable_buttons)
-        self.output.anchorClicked.connect(lambda: open_folder(self.csv_config["DESTINATION"]))
+        self.output.anchorClicked.connect(lambda: open_path(self.csv_config["DESTINATION"]))
         # Addresses tab
         self.ABAddress.returnPressed.connect(self.addAddress.click)
         self.ABNickname.returnPressed.connect(self.addAddress.click)
@@ -205,7 +207,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.SaveSettings.clicked.connect(self.save_settings)
         self.resetButton.clicked.connect(self.get_config)
         self.folderButton.clicked.connect(self.folder_dialog)
-        self.openFolderButton.clicked.connect(lambda: open_folder(self.csv_config["DESTINATION"]))
+        self.openFolderButton.clicked.connect(lambda: open_path(self.csv_config["DESTINATION"]))
 
     def enable_buttons(self):
         if self.Address.text():
