@@ -3,6 +3,7 @@ import json
 import logging
 import sys
 import os
+import re
 from datetime import datetime
 
 import requests
@@ -259,7 +260,7 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         source = self.csv_config["SOURCE"]
         memo = self.csv_config["MEMO"]
         path = self.csv_config["DESTINATION"]
-        rows_list = []
+        filtered_rows = []
 
         try:
             self.console(f"Searching for transactions from {start_date_console} to {end_date_console}<br>"
@@ -277,9 +278,9 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                 if float(amount) > threshold_max or float(amount) < threshold_min:
                     pass
                 elif start_date <= dates_formatted <= end_date:
-                    rows_list.append(rows)
+                    filtered_rows.append(rows)
 
-            if rows_list:
+            if filtered_rows:
                 with open(csv_file, "w", newline="") as file:
                     writer = csv.writer(file)
                     writer.writerow(top_row)
@@ -288,12 +289,12 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                 logging.info(top_row)
                 self.output.append(str(top_row))
 
-                for items in rows_list:
+                for filtered_tx in filtered_rows:
                     with open(csv_file, "a", newline="") as file:
                         writer = csv.writer(file)
-                        writer.writerow(items)
-                    logging.info(items)
-                    self.output.append(str(items))
+                        writer.writerow(filtered_tx)
+                    logging.info(filtered_tx)
+                    self.output.append(str(filtered_tx))
 
                 self.console(f"End of transactions from {start_date_console} to {end_date_console}<p>")
                 self.console(f"Successfully created<br>{self.Address.text()}.csv<br>"
