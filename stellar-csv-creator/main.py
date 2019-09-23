@@ -286,20 +286,18 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
                     writer.writerow(top_row)
 
                 self.console(f"Creating CSV", log=True)
-                logging.info(top_row)
-                self.output.append(str(top_row))
+                self.console(str(top_row), log=True, append=True)
 
                 for filtered_tx in filtered_rows:
                     with open(csv_file, "a", newline="") as file:
                         writer = csv.writer(file)
                         writer.writerow(filtered_tx)
-                    logging.info(filtered_tx)
-                    self.output.append(str(filtered_tx))
+                    self.console(str(filtered_tx), log=True, append=True)
 
                 self.console(f"End of transactions from {start_date_console} to {end_date_console}<p>")
                 self.console(f"Successfully created<br>{self.Address.text()}.csv<br>"
-                             f"in folder <a href='{path}'><font color='{self.link_color}'>{path}</font></a><p>")
-                logging.info(f"Successfully created {self.Address.text()}.csv in {path}")
+                             f"in folder <a href='{path}'><font color='{self.link_color}'>{path}</font></a><p>",
+                             log=True)
                 self.statusbar.showMessage("CSV created", timeout=3000)
             else:
                 self.console("No transactions found<p>", error=True, log=True)
@@ -365,12 +363,15 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
             self.statusbar.showMessage("Unable to save settings", timeout=3000)
             self.console(e, error=True, log=True)
 
-    def console(self, info, error=False, log=False):
-        console_append = f"<html><b>{info}</b></html>"
+    def console(self, info, error=False, log=False, append=False):
+        console_append = f"<b>{info}</b>"
         if log:
+            info = re.sub("<[^>]*>", " ", info)
             logging.info(info)
         if error:
-            console_append = f"<html><font color={self.error_color}><b>{info}</b></font></html>"
+            console_append = f"<font color={self.error_color}><b>{info}</b></font>"
+        if append:
+            console_append = info
 
         return self.output.append(console_append)
 
