@@ -192,6 +192,8 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Address.returnPressed.connect(self.CreateCSV.click)
         self.Address.textChanged['QString'].connect(self.enable_buttons)
         self.StartDate.textChanged.connect(self.enable_buttons)
+        self.StartDate.returnPressed.connect(self.CreateCSV.click)
+        self.EndDate.returnPressed.connect(self.CreateCSV.click)
         self.output.anchorClicked.connect(lambda: open_path(self.csv_config["DESTINATION"]))
         # Addresses tab
         self.ABAddress.returnPressed.connect(self.addAddress.click)
@@ -381,6 +383,9 @@ class CSVCreator(QtWidgets.QMainWindow, Ui_MainWindow):
         logging.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
         self.console("CRITICAL ERROR: Check log file for full details", error=True)
 
+    def closeEvent(self, event: QtGui.QCloseEvent):
+        logging.info("App shutting down...")
+
 
 if __name__ == "__main__":
     make_dir(user_dir())
@@ -389,7 +394,7 @@ if __name__ == "__main__":
     log_file = os.path.join(user_dir(), "stellar-csv-creator.log")
     logging.basicConfig(filename=log_file, format=f"%(asctime)s:%(levelname)s:%(message)s",
                         datefmt="%Y-%m-%dT%H:%M:%SZ", level=logging.INFO)
-    logging.info("App started")
+    logging.info("App started...")
     setup_config()
 
     app = QtWidgets.QApplication(sys.argv)
