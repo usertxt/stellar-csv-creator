@@ -6,6 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2019-10-08
+### Added
+- Setting to choose CSV file destination
+- Link to CSV file destination in console upon creation
+- Save Settings menu option with shortcut (Ctrl+S)
+- Error check on Min and Max threshold settings. A warning will appear and the text will turn red when Min is more than
+Max
+- Open Log item to Help menu
+- Log message on shutdown
+
+### Changed
+- User files are now created in AppData/Roaming (Windows) or Home (Linux) folders
+- Moved static class methods to utils
+- create_csv function no longer relies on error check for iteration completion
+- console function now strips html tags for cleaner logging
+- console function can now be used to amend plain text to the console
+
 ## [0.4.0] - 2019-09-02
 ### Added
 - Link to website in about dialog
@@ -64,7 +81,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - First beta release
 
-[Unreleased]: https://github.com/usertxt/stellar-csv-creator/compare/v0.4.0...dev
+[Unreleased]: https://github.com/usertxt/stellar-csv-creator/compare/v0.5.0...dev
+[0.5.0]: https://github.com/usertxt/stellar-csv-creator/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/usertxt/stellar-csv-creator/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/usertxt/stellar-csv-creator/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/usertxt/stellar-csv-creator/compare/v0.2.0...v0.2.1
